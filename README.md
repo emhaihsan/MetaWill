@@ -4,26 +4,88 @@ iPROMISE is a decentralized platform that leverages blockchain technology to ena
 
 ## Key Features
 
-- **Wallet-Based Authentication**: Users connect their Ethereum wallet to access the platform.
-- **Commitment Creation**: Users can create detailed commitments with financial stakes.
-- **Validator Selection**: Users assign a trusted validator for their commitments.
-- **Financial Staking Mechanism**: Ethereum is locked as collateral for commitments.
-- **Commitment Validation Process**: Two-party verification system for commitment completion.
-- **Outcome Processing**: Automatic handling of funds based on commitment outcome.
-- **User Dashboard**: Central interface for managing commitments.
-- **Donation Mechanism**: Handles failed commitment stakes with predefined donation addresses.
+- **Wallet-Based Authentication**: Connect your Ethereum wallet to access the platform
+- **Commitment Creation**: Create detailed commitments with financial stakes
+- **Validator Selection**: Assign trusted validators for your commitments
+- **Financial Staking Mechanism**: Lock Ethereum as collateral for commitments
+- **Commitment Validation**: Two-party verification system for commitment completion
+- **User Dashboard**: Central interface for managing active and past commitments
+- **Validation Page**: Dedicated area to review and validate commitments assigned to you
+- **User Profile**: Manage your personal information and notification preferences
 
-## Technical Overview
+## Current Implementation
 
-- **Frontend**: React-based application with RainbowKit integration for wallet connection.
-- **Backend/Blockchain**: Ethereum blockchain integration with IPFS for storing commitment details.
-- **Smart Contracts**: Solidity-based contracts for commitment management and fund distribution.
+The frontend of iPROMISE is built with Next.js 15 and includes the following pages:
+
+- **Home Page**: Landing page with information about the platform
+- **Dashboard**: View your active and past commitments
+- **Create Commitment**: Form to create new commitments with multi-step process
+- **Validate**: Review and respond to validation requests assigned to you
+- **Profile**: Manage your personal information and settings
+
+## Technical Stack
+
+- **Frontend**:
+  - Next.js 15.2.1
+  - React 19
+  - Tailwind CSS 4
+  - RainbowKit 2.2.4 for wallet connection
+  - Wagmi 2.14.12 for Ethereum interactions
+  - TypeScript 5
+
+- **Smart Contracts** (In Development):
+  - Solidity
+  - Foundry for development and testing
+
+## Project Structure
+
+The project is organized into two main directories:
+
+- **`/frontend`**: Contains the Next.js web application
+- **`/contracts`**: Contains the Solidity smart contracts (in development)
 
 ## Getting Started
 
-1. **Connect Wallet**: Use RainbowKit to connect your Ethereum wallet.
-2. **Create a Commitment**: Enter details, set a deadline, and specify a stake.
-3. **Assign a Validator**: Designate a validator for your commitment.
-4. **Monitor Progress**: Keep track of your commitments via the user dashboard.
-5. **Complete or Fail**: Upon deadline, validators verify the outcome, and funds are processed accordingly.
-6. **Donate to Charity**: If a commitment fails, users can donate their remaining stake to a predefined address.
+### Prerequisites
+
+- Node.js (v18 or later)
+- npm or yarn
+- An Ethereum wallet (MetaMask, Coinbase Wallet, etc.)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/ipromise.git
+   cd ipromise
+   ```
+
+2. Install and run the frontend:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+3. Open your browser and navigate to:
+   ```
+   http://localhost:3000
+   ```
+
+## Current Status
+
+- The frontend UI is functional with mock data
+- Smart contract integration is in development
+- The application uses a responsive design that works on mobile and desktop
+
+## Next Steps
+
+- Complete smart contract development and testing
+- Integrate frontend with smart contracts
+- Add IPFS integration for storing commitment details
+- Implement real-time notifications
+- Add support for multiple blockchains
+
+## License
+
+This project is licensed under the MIT License
