@@ -26,3 +26,4 @@ iPROMISE is a decentralized platform that leverages blockchain technology to ena
 3. **Assign a Validator**: Designate a validator for your commitment.
 4. **Monitor Progress**: Keep track of your commitments via the user dashboard.
 5. **Complete or Fail**: Upon deadline, validators verify the outcome, and funds are processed accordingly.
+6. **Donate to Charity**: If a commitment fails, users can donate their remaining stake to a predefined address.
