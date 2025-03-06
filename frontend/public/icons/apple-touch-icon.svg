@@ -1,0 +1,5 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="180" rx="40" fill="#4F46E5"/>
+  <path d="M90 60 C90 45, 105 45, 105 60 S120 75, 120 90 S105 105, 90 105 S60 90, 60 75 S75 45, 90 60" fill="#FFFFFF"/>
+  <text x="90" y="140" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#FFFFFF">iPROMISE</text>
+</svg>

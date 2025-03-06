@@ -1,0 +1,7 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#4F46E5"/>
+  <rect x="50" y="50" width="1100" height="530" rx="20" fill="#FFFFFF"/>
+  <path d="M600 200 C600 150, 650 150, 650 200 S700 250, 700 300 S650 350, 600 350 S500 300, 500 250 S550 150, 600 200" fill="#4F46E5"/>
+  <text x="600" y="450" font-family="Arial" font-size="60" font-weight="bold" text-anchor="middle" fill="#1F2937">iPROMISE</text>
+  <text x="600" y="520" font-family="Arial" font-size="30" text-anchor="middle" fill="#4B5563">Web3 Commitment Platform</text>
+</svg>
