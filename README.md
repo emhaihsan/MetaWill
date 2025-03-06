@@ -6,9 +6,9 @@ iPROMISE is a decentralized platform that leverages blockchain technology to ena
 
 - **Wallet-Based Authentication**: Connect your Ethereum wallet to access the platform
 - **Commitment Creation**: Create detailed commitments with financial stakes
-- **Validator Selection**: Assign trusted validators for your commitments
+- **Single Validator System**: Assign one trusted validator to verify your commitment completion
 - **Financial Staking Mechanism**: Lock Ethereum as collateral for commitments
-- **Commitment Validation**: Two-party verification system for commitment completion
+- **Commitment Validation**: Simplified validation process with one validator per commitment
 - **User Dashboard**: Central interface for managing active and past commitments
 - **Validation Page**: Dedicated area to review and validate commitments assigned to you
 - **User Profile**: Manage your personal information and notification preferences
@@ -33,8 +33,8 @@ The frontend of iPROMISE is built with Next.js 15 and includes the following pag
   - Wagmi 2.14.12 for Ethereum interactions
   - TypeScript 5
 
-- **Smart Contracts** (In Development):
-  - Solidity
+- **Smart Contracts**:
+  - Solidity 0.8.20+
   - Foundry for development and testing
 
 ## Project Structure
@@ -42,7 +42,19 @@ The frontend of iPROMISE is built with Next.js 15 and includes the following pag
 The project is organized into two main directories:
 
 - **`/frontend`**: Contains the Next.js web application
-- **`/contracts`**: Contains the Solidity smart contracts (in development)
+- **`/contracts`**: Contains the Solidity smart contracts
+
+## Smart Contract Details
+
+The iPROMISE smart contract implements the following core functionality:
+
+- **Commitment Creation**: Users can create commitments with a title, description, deadline, and charity address while staking ETH
+- **Validator Assignment**: Commitment creators can assign a single trusted validator to verify completion
+- **Validation Process**: Validators can approve or reject commitment completion
+- **Stake Management**: Upon approval, 99% of the stake is returned to the user (1% platform fee)
+- **Charity Donation**: Upon rejection, 99% of the stake is donated to the specified charity
+- **Cancellation**: Users can cancel commitments before a validator is assigned
+- **Force Completion**: After deadline, commitments without validation are automatically marked as failed
 
 ## Getting Started
 
@@ -51,6 +63,7 @@ The project is organized into two main directories:
 - Node.js (v18 or later)
 - npm or yarn
 - An Ethereum wallet (MetaMask, Coinbase Wallet, etc.)
+- Foundry (for smart contract development)
 
 ### Installation
 
@@ -72,19 +85,27 @@ The project is organized into two main directories:
    http://localhost:3000
    ```
 
+4. To work with the smart contracts:
+   ```bash
+   cd contracts
+   forge build
+   forge test
+   ```
+
 ## Current Status
 
 - The frontend UI is functional with mock data
-- Smart contract integration is in development
+- Smart contracts have been developed and tested
+- Single validator model implemented for simpler commitment validation
 - The application uses a responsive design that works on mobile and desktop
 
 ## Next Steps
 
-- Complete smart contract development and testing
 - Integrate frontend with smart contracts
 - Add IPFS integration for storing commitment details
 - Implement real-time notifications
 - Add support for multiple blockchains
+- Deploy to testnet and mainnet
 
 ## License
 
