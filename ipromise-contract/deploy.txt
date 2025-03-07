@@ -1,0 +1,12 @@
+Deploying iPROMISE contract...
+Deploying with account: 0xeE81aaB04Aa452a177f80CD4511A5975dDDeFd86
+IPROMISEContract deployed to: 0xe7AE83278762f172913f95e140010224B4ae690B
+Adding sample charities...
+Approved charity: 0x89D02B93379952B0C5aC0354724165Da2Ce3146B
+Approved charity: 0x066A62c06A4dCBb5224792db955dB9f4a8bE362d
+Deployment info saved to: /Users/emhaihsan/Documents/Github/hackathons/ipromise/ipromise-contract/deployment-info.json
+
+----- VERIFICATION INSTRUCTIONS -----
+To verify the contract on Etherscan, run:
+npx hardhat verify --network sepolia 0xe7AE83278762f172913f95e140010224B4ae690B
+---------------------------------------
