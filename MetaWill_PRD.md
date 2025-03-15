@@ -1,15 +1,15 @@
-# iPROMISE: Product Requirement Document
+# MetaWill: Product Requirement Document
 
 ## Project Overview
 
-**Project Name:** iPROMISE  
+**Project Name:** MetaWill  
 **Platform Type:** Web3 Commitment Platform  
 **Hackathon:** Electroneum Hackathon  
 **Date:** March 6, 2025
 
 ## Executive Summary
 
-iPROMISE is a decentralized platform built on blockchain technology that enables users to create and fulfill personal commitments with financial accountability. Users stake Ethereum as collateral for their promises, which is either returned upon successful completion or donated to charity if the commitment is not fulfilled. The platform leverages smart contracts to ensure transparency and trustless verification through a validator system.
+MetaWill is a decentralized platform built on blockchain technology that enables users to create and fulfill personal commitments with financial accountability. Users stake Ethereum as collateral for their promises, which is either returned upon successful completion or donated to charity if the commitment is not fulfilled. The platform leverages smart contracts to ensure transparency and trustless verification through a validator system.
 
 ## Problem Statement
 
@@ -17,7 +17,8 @@ People often struggle to follow through on personal commitments and goals. Tradi
 
 ## Solution
 
-iPROMISE provides a decentralized commitment platform where users can:
+MetaWill provides a decentralized commitment platform where users can:
+
 1. Create public commitments with financial stakes
 2. Set their own deadlines
 3. Assign trusted validators
@@ -36,6 +37,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
 ## Key Features & Requirements
 
 ### 1. Wallet-Based Authentication
+
 - **Description:** Users must connect their Ethereum wallet to access the platform
 - **Requirements:**
   - Integration with RainbowKit for wallet connection
@@ -44,6 +46,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
   - Wallet address used as unique user identifier
 
 ### 2. Commitment Creation
+
 - **Description:** Users can create detailed commitments with financial stakes
 - **Requirements:**
   - Form for commitment description
@@ -54,6 +57,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
   - Smart contract deployment upon confirmation
 
 ### 3. Validator Selection
+
 - **Description:** Users must designate one external address as their commitment validator
 - **Requirements:**
   - Address validation to ensure it's a valid Ethereum address
@@ -62,6 +66,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
   - Clear explanation of validator responsibilities
 
 ### 4. Financial Staking Mechanism
+
 - **Description:** Users lock ETH as collateral for their commitment
 - **Requirements:**
   - Minimum and maximum stake limits
@@ -70,6 +75,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
   - Transaction confirmation and receipt
 
 ### 5. Commitment Validation Process
+
 - **Description:** Two-party verification system for commitment completion
 - **Requirements:**
   - User self-reporting interface (success/failure)
@@ -78,6 +84,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
   - Dispute resolution process (if needed)
 
 ### 6. Outcome Processing
+
 - **Description:** Automatic handling of funds based on commitment outcome
 - **Requirements:**
   - Success scenario: Return of staked ETH to user
@@ -86,6 +93,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
   - History of outcomes in user dashboard
 
 ### 7. User Dashboard
+
 - **Description:** Central interface for managing commitments
 - **Requirements:**
   - Active commitments display
@@ -95,6 +103,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
   - Profile management
 
 ### 8. Donation Mechanism
+
 - **Description:** System for handling failed commitment stakes
 - **Requirements:**
   - Predefined donation address(es)
@@ -105,6 +114,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
 ## Technical Requirements
 
 ### Smart Contracts
+
 - Solidity-based contracts for:
   - Commitment creation and management
   - Fund staking and escrow
@@ -112,12 +122,14 @@ The platform uses blockchain technology to ensure transparency, immutability, an
   - Automated fund distribution
 
 ### Frontend
+
 - React-based web application
 - RainbowKit integration for wallet connection
 - Responsive design for mobile and desktop
 - User-friendly interfaces for all core functions
 
 ### Backend/Blockchain
+
 - Ethereum blockchain integration
 - IPFS for storing commitment details (if needed)
 - Event listeners for smart contract events
@@ -126,13 +138,15 @@ The platform uses blockchain technology to ensure transparency, immutability, an
 ## User Flows
 
 ### 1. User Registration/Login
-1. User visits iPROMISE platform
+
+1. User visits MetaWill platform
 2. Clicks "Connect Wallet"
 3. Selects wallet provider through RainbowKit
 4. Approves connection request
 5. Wallet address is authenticated and user enters platform
 
 ### 2. Creating a Commitment
+
 1. User navigates to "New Commitment" section
 2. Enters commitment details and description
 3. Sets deadline date
@@ -143,6 +157,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
 8. Receives confirmation of commitment creation
 
 ### 3. Validation Process
+
 1. Validator receives notification of validation request
 2. Validator monitors user's progress
 3. When deadline approaches:
@@ -151,6 +166,7 @@ The platform uses blockchain technology to ensure transparency, immutability, an
 4. System processes outcome based on consensus
 
 ### 4. Commitment Resolution
+
 1. If both user and validator confirm success:
    - Smart contract returns staked ETH to user
    - Commitment marked as successfully completed
@@ -184,21 +200,25 @@ The platform uses blockchain technology to ensure transparency, immutability, an
 ## Implementation Timeline (Hackathon Focus)
 
 ### Phase 1: Core Development
+
 - Smart contract development and testing
 - Basic frontend with wallet connection
 - Commitment creation flow
 
 ### Phase 2: Validation System
+
 - Validator notification and interface
 - Consensus mechanism implementation
 - Fund distribution logic
 
 ### Phase 3: User Experience
+
 - Dashboard development
 - History and tracking features
 - UI/UX refinement
 
 ### Phase 4: Testing & Deployment
+
 - Comprehensive testing
 - Deployment to testnet
 - Documentation completion
@@ -206,4 +226,4 @@ The platform uses blockchain technology to ensure transparency, immutability, an
 
 ## Conclusion
 
-iPROMISE represents a novel application of blockchain technology to solve the universal challenge of commitment fulfillment. By creating financial incentives and a transparent validation system, the platform encourages users to follow through on their promises while generating positive social impact through its donation mechanism.
+MetaWill represents a novel application of blockchain technology to solve the universal challenge of commitment fulfillment. By creating financial incentives and a transparent validation system, the platform encourages users to follow through on their promises while generating positive social impact through its donation mechanism.
