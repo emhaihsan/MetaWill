@@ -4,8 +4,7 @@
 
 **Project Name:** MetaWill  
 **Platform Type:** Web3 Commitment Platform  
-**Hackathon:** Electroneum Hackathon  
-**Date:** March 6, 2025
+**Hackathon:** Metamask Hackathon
 
 ## Executive Summary
 
