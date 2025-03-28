@@ -19,53 +19,60 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50 overflow-hidden">
       {/* Decorative elements */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="animate-pulse-slow absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-3xl"></div>
-        <div className="animate-pulse-slow absolute top-1/3 -left-20 h-60 w-60 rounded-full bg-primary/10 blur-3xl"></div>
-        <div className="animate-pulse-slow absolute bottom-1/4 right-1/4 h-60 w-60 rounded-full bg-primary/10 blur-3xl"></div>
+        <div className="animate-pulse-slow absolute -top-40 -right-40 h-80 w-80 rounded-full bg-[#F6851B]/20 blur-3xl"></div>
+        <div className="animate-pulse-slow absolute top-1/3 -left-20 h-60 w-60 rounded-full bg-[#F6851B]/20 blur-3xl"></div>
+        <div className="animate-pulse-slow absolute bottom-1/4 right-1/4 h-60 w-60 rounded-full bg-[#F6851B]/20 blur-3xl"></div>
 
-        <div className="absolute top-1/4 left-1/2 h-40 w-40 -translate-x-1/2 border border-primary/20 opacity-20">
-          <div className="absolute inset-0 animate-spin-slow border-t border-primary"></div>
+        <div className="absolute top-1/4 left-1/2 h-40 w-40 -translate-x-1/2 border border-[#F6851B]/30 opacity-40">
+          <div className="absolute inset-0 animate-spin-slow border-t border-[#F6851B]"></div>
         </div>
 
         <div className="absolute bottom-20 left-20 h-20 w-20 animate-float">
-          <Hexagon className="h-full w-full text-primary/10" />
+          <Hexagon className="h-full w-full text-[#F6851B]/20" />
         </div>
         <div className="absolute top-40 right-20 h-16 w-16 animate-float-delay">
-          <Hexagon className="h-full w-full text-primary/10" />
+          <Hexagon className="h-full w-full text-[#F6851B]/20" />
         </div>
+
+        <div className="absolute inset-0 bg-grid-[#F6851B]/5 opacity-30"></div>
+
+        <div className="absolute top-1/2 left-1/4 h-24 w-24 rounded-full border border-[#F6851B]/20 animate-pulse-slow"></div>
+        <div className="absolute top-1/3 right-1/4 h-16 w-16 rounded-full border border-[#F6851B]/20 animate-pulse-slow"></div>
+        <div className="absolute bottom-1/3 left-1/3 h-12 w-12 rounded-full border border-[#F6851B]/20 animate-pulse-slow"></div>
+
+        <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#F6851B]/30 to-transparent"></div>
+        <div className="absolute top-0 left-1/4 h-full w-px bg-gradient-to-b from-transparent via-[#F6851B]/30 to-transparent"></div>
+        <div className="absolute top-0 right-1/4 h-full w-px bg-gradient-to-b from-transparent via-[#F6851B]/30 to-transparent"></div>
       </div>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6">
+      <header className="sticky top-0 z-50 w-full border-b border-[#F6851B]/20 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6">
         <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
           <div className="flex gap-6 md:gap-10">
             <Link href="/" className="flex items-center space-x-2">
-              <Shield className="h-6 w-6 text-primary" />
+              <Shield className="h-6 w-6 text-[#F6851B]" />
               <span className="inline-block font-bold">MetaWill</span>
             </Link>
             <nav className="hidden gap-6 md:flex">
               <Link
                 href="#features"
-                className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-[#F6851B]"
               >
                 Features
               </Link>
               <Link
                 href="#how-it-works"
-                className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-[#F6851B]"
               >
                 How It Works
               </Link>
               <Link
                 href="#faq"
-                className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-[#F6851B]"
               >
                 FAQ
               </Link>
             </nav>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-4">
-            {/* <Button size="sm" className="hidden sm:flex gap-2">
-              <Wallet className="h-4 w-4" /> Connect Wallet
-            </Button> */}
             <ConnectButton />
           </div>
         </div>
@@ -76,12 +83,12 @@ export default function Home() {
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
-                  <div className="inline-flex items-center rounded-full border border-primary/20 bg-background/50 px-3 py-1 text-sm text-primary backdrop-blur-sm">
+                  <div className="inline-flex items-center rounded-full border border-[#F6851B]/30 bg-background/50 px-3 py-1 text-sm text-[#F6851B] backdrop-blur-sm shadow-[0_0_15px_rgba(246,133,27,0.2)]">
                     <Lock className="mr-1 h-3 w-3" /> Powered by Blockchain
                   </div>
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
                     Keep Your Promises with{" "}
-                    <span className="text-primary animate-text-gradient bg-gradient-to-r from-primary via-primary/70 to-primary bg-clip-text text-transparent">
+                    <span className="text-[#F6851B] animate-text-gradient bg-gradient-to-r from-[#F6851B] via-[#F6851B]/70 to-[#F6851B] bg-clip-text text-transparent">
                       Blockchain
                     </span>{" "}
                     Accountability
@@ -96,7 +103,7 @@ export default function Home() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-primary/20 hover:bg-primary/5"
+                    className="border-[#F6851B]/30 hover:bg-[#F6851B]/10 text-[#F6851B] hover:border-[#F6851B] shadow-[0_0_10px_rgba(246,133,27,0.1)]"
                     asChild
                   >
                     <Link href="/whitepaper">Read Whitepaper</Link>
@@ -105,16 +112,16 @@ export default function Home() {
               </div>
               <div className="flex items-center justify-center">
                 <div className="relative h-[350px] w-[350px] sm:h-[400px] sm:w-[400px] lg:h-[450px] lg:w-[450px] animate-float">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-2xl"></div>
-                  <div className="relative h-full w-full rounded-xl border border-primary/20 bg-background/50 p-4 backdrop-blur-sm">
-                    <div className="absolute top-0 left-0 right-0 h-10 rounded-t-xl bg-gradient-to-r from-primary/10 to-primary/5 flex items-center px-4">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#F6851B]/30 to-transparent blur-2xl"></div>
+                  <div className="relative h-full w-full rounded-xl border border-[#F6851B]/30 bg-background/50 p-4 backdrop-blur-sm shadow-[0_0_30px_rgba(246,133,27,0.15)]">
+                    <div className="absolute top-0 left-0 right-0 h-10 rounded-t-xl bg-gradient-to-r from-[#F6851B]/20 to-[#F6851B]/10 flex items-center px-4">
                       <div className="flex space-x-2">
-                        <div className="h-3 w-3 rounded-full bg-primary/30"></div>
-                        <div className="h-3 w-3 rounded-full bg-primary/20"></div>
-                        <div className="h-3 w-3 rounded-full bg-primary/10"></div>
+                        <div className="h-3 w-3 rounded-full bg-[#F6851B]/40"></div>
+                        <div className="h-3 w-3 rounded-full bg-[#F6851B]/30"></div>
+                        <div className="h-3 w-3 rounded-full bg-[#F6851B]/20"></div>
                       </div>
                     </div>
-                    <div className="mt-10 h-[calc(100%-2.5rem)] overflow-hidden rounded-md border border-primary/10 bg-background/80">
+                    <div className="mt-10 h-[calc(100%-2.5rem)] overflow-hidden rounded-md border border-[#F6851B]/20 bg-background/80">
                       <Image
                         src="/placeholder.svg?height=450&width=450"
                         alt="MetaWill Dashboard Preview"
@@ -133,11 +140,11 @@ export default function Home() {
           id="features"
           className="w-full py-12 md:py-24 lg:py-32 bg-muted/50 relative"
         >
-          <div className="absolute inset-0 bg-grid-primary/5 [mask-image:linear-gradient(to_bottom,transparent,black,transparent)]"></div>
+          <div className="absolute inset-0 bg-grid-[#F6851B]/5 [mask-image:linear-gradient(to_bottom,transparent,black,transparent)]"></div>
           <div className="container px-4 md:px-6 relative">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">
+                <div className="inline-block rounded-lg bg-[#F6851B] px-3 py-1 text-sm text-primary-foreground">
                   Features
                 </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -150,8 +157,8 @@ export default function Home() {
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
-              <div className="group flex flex-col justify-center space-y-4 rounded-xl border border-primary/10 bg-background/50 p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <div className="group flex flex-col justify-center space-y-4 rounded-xl border border-[#F6851B]/20 bg-background/50 p-6 transition-all hover:border-[#F6851B]/40 hover:shadow-lg hover:shadow-[#F6851B]/5 backdrop-blur-sm">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F6851B] text-primary-foreground shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <Wallet className="h-6 w-6" />
                 </div>
                 <div className="space-y-2">
@@ -162,8 +169,8 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <div className="group flex flex-col justify-center space-y-4 rounded-xl border border-primary/10 bg-background/50 p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <div className="group flex flex-col justify-center space-y-4 rounded-xl border border-[#F6851B]/20 bg-background/50 p-6 transition-all hover:border-[#F6851B]/40 hover:shadow-lg hover:shadow-[#F6851B]/5 backdrop-blur-sm">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F6851B] text-primary-foreground shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <Users className="h-6 w-6" />
                 </div>
                 <div className="space-y-2">
@@ -174,8 +181,8 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <div className="group flex flex-col justify-center space-y-4 rounded-xl border border-primary/10 bg-background/50 p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <div className="group flex flex-col justify-center space-y-4 rounded-xl border border-[#F6851B]/20 bg-background/50 p-6 transition-all hover:border-[#F6851B]/40 hover:shadow-lg hover:shadow-[#F6851B]/5 backdrop-blur-sm">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F6851B] text-primary-foreground shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <Calendar className="h-6 w-6" />
                 </div>
                 <div className="space-y-2">
@@ -196,7 +203,7 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">
+                <div className="inline-block rounded-lg bg-[#F6851B] px-3 py-1 text-sm text-primary-foreground">
                   Process
                 </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -210,8 +217,8 @@ export default function Home() {
             </div>
             <div className="mx-auto grid max-w-5xl items-start gap-6 py-12 lg:grid-cols-4 lg:gap-12">
               <div className="flex flex-col justify-start space-y-4 relative">
-                <div className="absolute left-6 top-6 h-[calc(100%-1.5rem)] w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent lg:block hidden"></div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground relative z-10">
+                <div className="absolute left-6 top-6 h-[calc(100%-1.5rem)] w-0.5 bg-gradient-to-b from-[#F6851B] via-[#F6851B]/50 to-transparent lg:block hidden"></div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6851B] text-primary-foreground relative z-10 shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <span className="text-xl font-bold">1</span>
                 </div>
                 <div className="space-y-2">
@@ -223,8 +230,8 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex flex-col justify-start space-y-4 relative">
-                <div className="absolute left-6 top-6 h-[calc(100%-1.5rem)] w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent lg:block hidden"></div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground relative z-10">
+                <div className="absolute left-6 top-6 h-[calc(100%-1.5rem)] w-0.5 bg-gradient-to-b from-[#F6851B] via-[#F6851B]/50 to-transparent lg:block hidden"></div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6851B] text-primary-foreground relative z-10 shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <span className="text-xl font-bold">2</span>
                 </div>
                 <div className="space-y-2">
@@ -236,8 +243,8 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex flex-col justify-start space-y-4 relative">
-                <div className="absolute left-6 top-6 h-[calc(100%-1.5rem)] w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent lg:block hidden"></div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground relative z-10">
+                <div className="absolute left-6 top-6 h-[calc(100%-1.5rem)] w-0.5 bg-gradient-to-b from-[#F6851B] via-[#F6851B]/50 to-transparent lg:block hidden"></div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6851B] text-primary-foreground relative z-10 shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <span className="text-xl font-bold">3</span>
                 </div>
                 <div className="space-y-2">
@@ -249,7 +256,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex flex-col justify-start space-y-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground relative z-10">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6851B] text-primary-foreground relative z-10 shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <span className="text-xl font-bold">4</span>
                 </div>
                 <div className="space-y-2">
@@ -264,26 +271,26 @@ export default function Home() {
           </div>
         </section>
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50 relative">
-          <div className="absolute inset-0 bg-grid-primary/5 [mask-image:linear-gradient(to_bottom,transparent,black,transparent)]"></div>
+          <div className="absolute inset-0 bg-grid-[#F6851B]/5 [mask-image:linear-gradient(to_bottom,transparent,black,transparent)]"></div>
           <div className="container px-4 md:px-6 relative">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex items-center justify-center">
                 <div className="relative h-[350px] w-[350px] sm:h-[400px] sm:w-[400px] lg:h-[450px] lg:w-[450px] animate-float-delay">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-2xl"></div>
-                  <div className="relative h-full w-full rounded-xl border border-primary/20 bg-background/50 p-4 backdrop-blur-sm">
-                    <div className="h-full w-full rounded-lg border border-primary/10 bg-background/80 p-4 flex flex-col">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#F6851B]/30 to-transparent blur-2xl"></div>
+                  <div className="relative h-full w-full rounded-xl border border-[#F6851B]/30 bg-background/50 p-4 backdrop-blur-sm shadow-[0_0_30px_rgba(246,133,27,0.15)]">
+                    <div className="h-full w-full rounded-lg border border-[#F6851B]/20 bg-background/80 p-4 flex flex-col">
                       <div className="flex items-center space-x-2 mb-4">
-                        <Globe className="h-5 w-5 text-primary" />
-                        <div className="h-2 w-20 rounded-full bg-primary/20"></div>
+                        <Globe className="h-5 w-5 text-[#F6851B]" />
+                        <div className="h-2 w-20 rounded-full bg-[#F6851B]/30"></div>
                       </div>
                       <div className="flex-1 space-y-3">
-                        <div className="h-2 w-full rounded-full bg-primary/10"></div>
-                        <div className="h-2 w-5/6 rounded-full bg-primary/10"></div>
-                        <div className="h-2 w-4/6 rounded-full bg-primary/10"></div>
-                        <div className="h-10 w-full rounded-md bg-primary/5 mt-4"></div>
-                        <div className="h-20 w-full rounded-md bg-primary/5 mt-4"></div>
+                        <div className="h-2 w-full rounded-full bg-[#F6851B]/20"></div>
+                        <div className="h-2 w-5/6 rounded-full bg-[#F6851B]/20"></div>
+                        <div className="h-2 w-4/6 rounded-full bg-[#F6851B]/20"></div>
+                        <div className="h-10 w-full rounded-md bg-[#F6851B]/10 mt-4"></div>
+                        <div className="h-20 w-full rounded-md bg-[#F6851B]/10 mt-4"></div>
                         <div className="flex justify-end mt-4">
-                          <div className="h-8 w-24 rounded-md bg-primary/20"></div>
+                          <div className="h-8 w-24 rounded-md bg-[#F6851B]/30"></div>
                         </div>
                       </div>
                     </div>
@@ -302,34 +309,34 @@ export default function Home() {
                 </div>
                 <ul className="grid gap-3">
                   <li className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-                      <CheckCircle className="h-4 w-4 text-primary" />
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
+                      <CheckCircle className="h-4 w-4 text-[#F6851B]" />
                     </div>
                     <span>Transparent and immutable commitment tracking</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-                      <CheckCircle className="h-4 w-4 text-primary" />
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
+                      <CheckCircle className="h-4 w-4 text-[#F6851B]" />
                     </div>
                     <span>Financial incentives to keep your promises</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-                      <CheckCircle className="h-4 w-4 text-primary" />
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
+                      <CheckCircle className="h-4 w-4 text-[#F6851B]" />
                     </div>
                     <span>Trustless verification through validator system</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-                      <CheckCircle className="h-4 w-4 text-primary" />
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
+                      <CheckCircle className="h-4 w-4 text-[#F6851B]" />
                     </div>
                     <span>
                       Positive social impact through charity donations
                     </span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-                      <CheckCircle className="h-4 w-4 text-primary" />
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
+                      <CheckCircle className="h-4 w-4 text-[#F6851B]" />
                     </div>
                     <span>
                       Decentralized platform with no central authority
@@ -340,7 +347,7 @@ export default function Home() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-primary/20 hover:bg-primary/5"
+                    className="border-[#F6851B]/30 hover:bg-[#F6851B]/10 text-[#F6851B] hover:border-[#F6851B] shadow-[0_0_10px_rgba(246,133,27,0.1)]"
                     asChild
                   >
                     <Link href="/whitepaper">Read Whitepaper</Link>
@@ -363,7 +370,7 @@ export default function Home() {
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl gap-6 py-12 lg:grid-cols-2 lg:gap-12">
-              <div className="space-y-4 rounded-xl border border-primary/10 bg-background/50 p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+              <div className="space-y-4 rounded-xl border border-[#F6851B]/20 bg-background/50 p-6 transition-all hover:border-[#F6851B]/40 hover:shadow-lg hover:shadow-[#F6851B]/5 backdrop-blur-sm">
                 <h3 className="text-xl font-bold">What is MetaWill?</h3>
                 <p className="text-muted-foreground">
                   MetaWill is a decentralized platform built on blockchain
@@ -372,7 +379,7 @@ export default function Home() {
                   Ethereum as collateral for their promises.
                 </p>
               </div>
-              <div className="space-y-4 rounded-xl border border-primary/10 bg-background/50 p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+              <div className="space-y-4 rounded-xl border border-[#F6851B]/20 bg-background/50 p-6 transition-all hover:border-[#F6851B]/40 hover:shadow-lg hover:shadow-[#F6851B]/5 backdrop-blur-sm">
                 <h3 className="text-xl font-bold">
                   How does the validation process work?
                 </h3>
@@ -383,7 +390,7 @@ export default function Home() {
                   to be returned.
                 </p>
               </div>
-              <div className="space-y-4 rounded-xl border border-primary/10 bg-background/50 p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+              <div className="space-y-4 rounded-xl border border-[#F6851B]/20 bg-background/50 p-6 transition-all hover:border-[#F6851B]/40 hover:shadow-lg hover:shadow-[#F6851B]/5 backdrop-blur-sm">
                 <h3 className="text-xl font-bold">
                   What happens if I fail my commitment?
                 </h3>
@@ -394,7 +401,7 @@ export default function Home() {
                   promise.
                 </p>
               </div>
-              <div className="space-y-4 rounded-xl border border-primary/10 bg-background/50 p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+              <div className="space-y-4 rounded-xl border border-[#F6851B]/20 bg-background/50 p-6 transition-all hover:border-[#F6851B]/40 hover:shadow-lg hover:shadow-[#F6851B]/5 backdrop-blur-sm">
                 <h3 className="text-xl font-bold">Is MetaWill secure?</h3>
                 <p className="text-muted-foreground">
                   Yes, MetaWill uses smart contracts on the Ethereum blockchain
@@ -402,7 +409,7 @@ export default function Home() {
                   all commitments and financial transactions.
                 </p>
               </div>
-              <div className="space-y-4 rounded-xl border border-primary/10 bg-background/50 p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+              <div className="space-y-4 rounded-xl border border-[#F6851B]/20 bg-background/50 p-6 transition-all hover:border-[#F6851B]/40 hover:shadow-lg hover:shadow-[#F6851B]/5 backdrop-blur-sm">
                 <h3 className="text-xl font-bold">
                   How much ETH do I need to stake?
                 </h3>
@@ -412,7 +419,7 @@ export default function Home() {
                   enough to motivate you to complete your commitment.
                 </p>
               </div>
-              <div className="space-y-4 rounded-xl border border-primary/10 bg-background/50 p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+              <div className="space-y-4 rounded-xl border border-[#F6851B]/20 bg-background/50 p-6 transition-all hover:border-[#F6851B]/40 hover:shadow-lg hover:shadow-[#F6851B]/5 backdrop-blur-sm">
                 <h3 className="text-xl font-bold">
                   Can I be a validator for someone else?
                 </h3>
@@ -426,7 +433,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-primary text-primary-foreground relative overflow-hidden">
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-[#F6851B] text-primary-foreground relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(to_bottom,transparent,black,transparent)]"></div>
             <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-white/10 blur-3xl"></div>
@@ -447,7 +454,7 @@ export default function Home() {
                 <Button
                   size="lg"
                   variant="secondary"
-                  className="border-white/80 bg-white hover:bg-white/50"
+                  className="border-white/80 bg-white hover:bg-white/80 text-[#F6851B] font-medium shadow-[0_0_20px_rgba(255,255,255,0.3)]"
                   asChild
                 >
                   <Link href="/whitepaper">Read Whitepaper</Link>
@@ -457,10 +464,10 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="w-full border-t border-primary/10 bg-background py-6 relative">
+      <footer className="w-full border-t border-[#F6851B]/20 bg-background py-6 relative">
         <div className="container flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
+            <Shield className="h-6 w-6 text-[#F6851B]" />
             <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} MetaWill. All rights reserved.
             </p>
@@ -468,19 +475,19 @@ export default function Home() {
           <div className="flex gap-4">
             <Link
               href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
+              className="text-sm text-muted-foreground hover:text-[#F6851B]"
             >
               Privacy Policy
             </Link>
             <Link
               href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
+              className="text-sm text-muted-foreground hover:text-[#F6851B]"
             >
               Terms of Service
             </Link>
             <Link
               href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
+              className="text-sm text-muted-foreground hover:text-[#F6851B]"
             >
               Contact
             </Link>
