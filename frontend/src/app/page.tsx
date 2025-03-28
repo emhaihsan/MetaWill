@@ -10,6 +10,7 @@ import {
   Lock,
   Globe,
 } from "lucide-react";
+import { ConnectButton } from "@/components/connect-button";
 
 import { Button } from "@/components/ui/button";
 
@@ -62,9 +63,10 @@ export default function Home() {
             </nav>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-4">
-            <Button size="sm" className="hidden sm:flex gap-2">
+            {/* <Button size="sm" className="hidden sm:flex gap-2">
               <Wallet className="h-4 w-4" /> Connect Wallet
-            </Button>
+            </Button> */}
+            <ConnectButton />
           </div>
         </div>
       </header>
@@ -445,7 +447,7 @@ export default function Home() {
                 <Button
                   size="lg"
                   variant="secondary"
-                  className="border-white/20 bg-white/10 hover:bg-white/20"
+                  className="border-white/80 bg-white hover:bg-white/50"
                   asChild
                 >
                   <Link href="/whitepaper">Read Whitepaper</Link>
