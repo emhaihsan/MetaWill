@@ -1,0 +1,611 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Shield,
+  Wallet,
+  ArrowLeft,
+  Calendar,
+  Search,
+  Filter,
+  ChevronRight,
+  Hexagon,
+  CheckCircle,
+  XCircle,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+export default function ValidationRequestsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("deadline");
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [dialogAction, setDialogAction] = useState<"approve" | "reject" | null>(
+    null
+  );
+
+  // Mock data for validation requests
+  const pendingRequests = [
+    {
+      id: "1",
+      user: "0x9876...54fe",
+      title: "Complete Ethereum whitepaper analysis",
+      description: "Write a 10-page analysis of the Ethereum whitepaper",
+      staked: "0.6 ETH",
+      deadline: "May 20, 2025",
+      status: "pending-validation",
+      createdAt: "April 20, 2025",
+    },
+    {
+      id: "2",
+      user: "0x5432...21dc",
+      title: "Run 100km in a month",
+      description: "Track and complete 100km of running within 30 days",
+      staked: "0.4 ETH",
+      deadline: "May 5, 2025",
+      status: "pending-validation",
+      createdAt: "April 5, 2025",
+    },
+    {
+      id: "3",
+      user: "0x7890...12ij",
+      title: "Learn React Native",
+      description: "Complete a React Native course and build a mobile app",
+      staked: "0.5 ETH",
+      deadline: "June 15, 2025",
+      status: "pending-validation",
+      createdAt: "May 15, 2025",
+    },
+  ];
+
+  const completedRequests = [
+    {
+      id: "4",
+      user: "0x3456...78kl",
+      title: "Build a portfolio website",
+      description:
+        "Create a personal portfolio website with at least 5 projects",
+      staked: "0.3 ETH",
+      deadline: "March 10, 2025",
+      status: "approved",
+      createdAt: "February 10, 2025",
+      completedAt: "March 8, 2025",
+      feedback:
+        "Great work! The portfolio looks professional and showcases your skills well.",
+    },
+    {
+      id: "5",
+      user: "0x9012...34mn",
+      title: "Complete 50 leetcode problems",
+      description: "Solve at least 50 leetcode problems of varying difficulty",
+      staked: "0.35 ETH",
+      deadline: "April 1, 2025",
+      status: "rejected",
+      createdAt: "March 1, 2025",
+      completedAt: "April 1, 2025",
+      feedback:
+        "Only 42 problems were completed by the deadline, which is less than the required 50.",
+    },
+    {
+      id: "6",
+      user: "0x5678...90op",
+      title: "Write a technical blog post",
+      description:
+        "Write and publish a technical blog post about blockchain technology",
+      staked: "0.25 ETH",
+      deadline: "February 20, 2025",
+      status: "approved",
+      createdAt: "January 20, 2025",
+      completedAt: "February 18, 2025",
+      feedback: "Excellent article with clear explanations and good examples.",
+    },
+  ];
+
+  // Filter requests based on search query
+  const filteredPendingRequests = pendingRequests.filter(
+    (request) =>
+      request.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      request.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      request.user.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredCompletedRequests = completedRequests.filter(
+    (request) =>
+      request.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      request.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      request.user.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Sort requests based on selected sort option
+  const sortRequests = (requests) => {
+    switch (sortBy) {
+      case "deadline":
+        return [...requests].sort(
+          (a, b) => new Date(a.deadline) - new Date(b.deadline)
+        );
+      case "amount":
+        return [...requests].sort(
+          (a, b) => Number.parseFloat(a.staked) - Number.parseFloat(b.staked)
+        );
+      case "created":
+        return [...requests].sort(
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+        );
+      default:
+        return requests;
+    }
+  };
+
+  const sortedPendingRequests = sortRequests(filteredPendingRequests);
+  const sortedCompletedRequests = sortRequests(filteredCompletedRequests);
+
+  // Handle dialog open for approve/reject
+  const openDialog = (request, action: "approve" | "reject") => {
+    setSelectedRequest(request);
+    setDialogAction(action);
+    setFeedbackText("");
+  };
+
+  // Handle validation action
+  const handleValidationAction = () => {
+    // Here would be the logic to submit the validation to the blockchain
+    // For now, we'll just close the dialog
+    setSelectedRequest(null);
+    setDialogAction(null);
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50">
+      {/* Decorative elements */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
+        <div className="animate-pulse-slow absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-3xl"></div>
+        <div className="animate-pulse-slow absolute top-1/3 -left-20 h-60 w-60 rounded-full bg-primary/10 blur-3xl"></div>
+        <div className="animate-pulse-slow absolute bottom-1/4 right-1/4 h-60 w-60 rounded-full bg-primary/10 blur-3xl"></div>
+
+        <div className="absolute top-1/4 left-1/2 h-40 w-40 -translate-x-1/2 border border-primary/20 opacity-20">
+          <div className="absolute inset-0 animate-spin-slow border-t border-primary"></div>
+        </div>
+
+        <div className="absolute bottom-20 left-20 h-20 w-20 animate-float">
+          <Hexagon className="h-full w-full text-primary/10" />
+        </div>
+        <div className="absolute top-40 right-20 h-16 w-16 animate-float-delay">
+          <Hexagon className="h-full w-full text-primary/10" />
+        </div>
+      </div>
+
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center">
+          <Link href="/dashboard" className="flex items-center space-x-2">
+            <Button variant="ghost" size="icon" className="mr-2">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="sr-only">Back to dashboard</span>
+            </Button>
+            <span className="inline-block font-bold">Validation Requests</span>
+          </Link>
+        </div>
+      </header>
+
+      <main className="flex-1 container py-8">
+        <div className="flex flex-col gap-8">
+          {/* Search and Filter */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative w-full sm:max-w-xs">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search requests..."
+                className="w-full pl-8 border-primary/20 focus-visible:ring-primary"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Sort by:</span>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[180px] border-primary/20 focus:ring-primary">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="deadline">
+                    Deadline (Closest first)
+                  </SelectItem>
+                  <SelectItem value="amount">Amount (Lowest first)</SelectItem>
+                  <SelectItem value="created">
+                    Created date (Oldest first)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <Tabs defaultValue="pending" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger
+                value="pending"
+                className="data-[state=active]:bg-primary/10"
+              >
+                <Clock className="mr-2 h-4 w-4" /> Pending Requests
+              </TabsTrigger>
+              <TabsTrigger
+                value="completed"
+                className="data-[state=active]:bg-primary/10"
+              >
+                <CheckCircle className="mr-2 h-4 w-4" /> Completed Requests
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Pending Requests Tab */}
+            <TabsContent value="pending" className="space-y-4">
+              {sortedPendingRequests.length > 0 ? (
+                sortedPendingRequests.map((request) => (
+                  <Card
+                    key={request.id}
+                    className="border border-primary/10 bg-background/50 backdrop-blur-sm overflow-hidden"
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500"></div>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <CardTitle>{request.title}</CardTitle>
+                            <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20">
+                              Pending Validation
+                            </Badge>
+                          </div>
+                          <CardDescription className="mt-1">
+                            {request.description}
+                          </CardDescription>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className="border-primary/20 text-primary"
+                        >
+                          {request.staked}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Calendar className="mr-2 h-4 w-4" />
+                          Deadline: {request.deadline}
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Wallet className="mr-2 h-4 w-4" />
+                          User: {request.user}
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="border-t border-primary/10 bg-muted/30">
+                      <div className="flex w-full justify-between">
+                        <div className="flex gap-2">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1 border-green-500/20 text-green-500 hover:bg-green-500/10"
+                                onClick={() => openDialog(request, "approve")}
+                              >
+                                <CheckCircle className="h-4 w-4" /> Approve
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Approve Commitment</DialogTitle>
+                                <DialogDescription>
+                                  You are approving that this commitment has
+                                  been successfully completed.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-4 py-4">
+                                <div className="space-y-2">
+                                  <h3 className="text-sm font-medium">
+                                    Commitment Details
+                                  </h3>
+                                  <p className="text-sm">
+                                    {selectedRequest?.title}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {selectedRequest?.description}
+                                  </p>
+                                </div>
+                                <div className="space-y-2">
+                                  <h3 className="text-sm font-medium">
+                                    Feedback (Optional)
+                                  </h3>
+                                  <Textarea
+                                    placeholder="Add any feedback or comments about this commitment..."
+                                    value={feedbackText}
+                                    onChange={(e) =>
+                                      setFeedbackText(e.target.value)
+                                    }
+                                    className="min-h-[100px] border-primary/20 focus-visible:ring-primary"
+                                  />
+                                </div>
+                                <Alert className="bg-green-500/10 text-green-500 border-green-500/20">
+                                  <CheckCircle className="h-4 w-4" />
+                                  <AlertTitle>Approval Confirmation</AlertTitle>
+                                  <AlertDescription>
+                                    By approving, the staked ETH will be
+                                    returned to the user. This action cannot be
+                                    undone.
+                                  </AlertDescription>
+                                </Alert>
+                              </div>
+                              <DialogFooter>
+                                <Button
+                                  variant="outline"
+                                  onClick={() => setSelectedRequest(null)}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  className="bg-green-500 hover:bg-green-600"
+                                  onClick={handleValidationAction}
+                                >
+                                  Confirm Approval
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1 border-red-500/20 text-red-500 hover:bg-red-500/10"
+                                onClick={() => openDialog(request, "reject")}
+                              >
+                                <XCircle className="h-4 w-4" /> Reject
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Reject Commitment</DialogTitle>
+                                <DialogDescription>
+                                  You are rejecting this commitment as
+                                  incomplete or unsuccessful.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-4 py-4">
+                                <div className="space-y-2">
+                                  <h3 className="text-sm font-medium">
+                                    Commitment Details
+                                  </h3>
+                                  <p className="text-sm">
+                                    {selectedRequest?.title}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {selectedRequest?.description}
+                                  </p>
+                                </div>
+                                <div className="space-y-2">
+                                  <h3 className="text-sm font-medium">
+                                    Reason for Rejection (Required)
+                                  </h3>
+                                  <Textarea
+                                    placeholder="Explain why this commitment was not successfully completed..."
+                                    value={feedbackText}
+                                    onChange={(e) =>
+                                      setFeedbackText(e.target.value)
+                                    }
+                                    className="min-h-[100px] border-primary/20 focus-visible:ring-primary"
+                                  />
+                                </div>
+                                <Alert className="bg-red-500/10 text-red-500 border-red-500/20">
+                                  <AlertCircle className="h-4 w-4" />
+                                  <AlertTitle>
+                                    Rejection Confirmation
+                                  </AlertTitle>
+                                  <AlertDescription>
+                                    By rejecting, the staked ETH will be donated
+                                    to charity. This action cannot be undone.
+                                  </AlertDescription>
+                                </Alert>
+                              </div>
+                              <DialogFooter>
+                                <Button
+                                  variant="outline"
+                                  onClick={() => setSelectedRequest(null)}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  variant="destructive"
+                                  onClick={handleValidationAction}
+                                  disabled={!feedbackText.trim()}
+                                >
+                                  Confirm Rejection
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="gap-1 text-primary"
+                        >
+                          View Details <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Clock className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">
+                    No pending requests
+                  </h3>
+                  <p className="text-muted-foreground">
+                    You don't have any pending validation requests.
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Completed Requests Tab */}
+            <TabsContent value="completed" className="space-y-4">
+              {sortedCompletedRequests.length > 0 ? (
+                sortedCompletedRequests.map((request) => (
+                  <Card
+                    key={request.id}
+                    className="border border-primary/10 bg-background/50 backdrop-blur-sm overflow-hidden"
+                  >
+                    <div
+                      className={`absolute top-0 left-0 right-0 h-1 ${
+                        request.status === "approved"
+                          ? "bg-green-500"
+                          : "bg-red-500"
+                      }`}
+                    ></div>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <CardTitle>{request.title}</CardTitle>
+                            {request.status === "approved" ? (
+                              <Badge className="bg-green-500/10 text-green-500 border-green-500/20">
+                                Approved
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-red-500/10 text-red-500 border-red-500/20">
+                                Rejected
+                              </Badge>
+                            )}
+                          </div>
+                          <CardDescription className="mt-1">
+                            {request.description}
+                          </CardDescription>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className="border-primary/20 text-primary"
+                        >
+                          {request.staked}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Calendar className="mr-2 h-4 w-4" />
+                          Completed: {request.completedAt}
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Wallet className="mr-2 h-4 w-4" />
+                          User: {request.user}
+                        </div>
+                        <div className="rounded-md bg-muted p-3">
+                          <h4 className="text-sm font-medium mb-1">
+                            Your Feedback:
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            {request.feedback}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="border-t border-primary/10 bg-muted/30">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="ml-auto gap-1 text-primary"
+                      >
+                        View Details <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <CheckCircle className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">
+                    No completed requests
+                  </h3>
+                  <p className="text-muted-foreground">
+                    You haven't completed any validation requests yet.
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+
+      <footer className="w-full border-t border-primary/10 bg-background py-6 relative">
+        <div className="container flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
+          <div className="flex items-center gap-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} MetaWill. All rights reserved.
+            </p>
+          </div>
+          <div className="flex gap-4">
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-primary"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-primary"
+            >
+              Terms of Service
+            </Link>
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-primary"
+            >
+              Contact
+            </Link>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
