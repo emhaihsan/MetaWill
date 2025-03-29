@@ -9,6 +9,7 @@ import {
   Hexagon,
   Lock,
   Globe,
+  List,
 } from "lucide-react";
 import { ConnectButton } from "@/components/connect-button";
 
@@ -79,7 +80,7 @@ export default function Home() {
       </header>
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 relative">
-          <div className="container px-4 md:px-6">
+          <div className="container px-4 md:px-12">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
@@ -122,13 +123,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="mt-10 h-[calc(100%-2.5rem)] overflow-hidden rounded-md border border-[#F6851B]/20 bg-background/80">
-                      <Image
-                        src="/placeholder.svg?height=450&width=450"
-                        alt="MetaWill Dashboard Preview"
-                        fill
-                        className="object-contain"
-                        priority
-                      />
+                      <List className="h-full w-full text-[#F6851B]/50" />
                     </div>
                   </div>
                 </div>
@@ -217,7 +212,6 @@ export default function Home() {
             </div>
             <div className="mx-auto grid max-w-5xl items-start gap-6 py-12 lg:grid-cols-4 lg:gap-12">
               <div className="flex flex-col justify-start space-y-4 relative">
-                <div className="absolute left-6 top-6 h-[calc(100%-1.5rem)] w-0.5 bg-gradient-to-b from-[#F6851B] via-[#F6851B]/50 to-transparent lg:block hidden"></div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6851B] text-primary-foreground relative z-10 shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <span className="text-xl font-bold">1</span>
                 </div>
@@ -230,7 +224,6 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex flex-col justify-start space-y-4 relative">
-                <div className="absolute left-6 top-6 h-[calc(100%-1.5rem)] w-0.5 bg-gradient-to-b from-[#F6851B] via-[#F6851B]/50 to-transparent lg:block hidden"></div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6851B] text-primary-foreground relative z-10 shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <span className="text-xl font-bold">2</span>
                 </div>
@@ -243,7 +236,6 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex flex-col justify-start space-y-4 relative">
-                <div className="absolute left-6 top-6 h-[calc(100%-1.5rem)] w-0.5 bg-gradient-to-b from-[#F6851B] via-[#F6851B]/50 to-transparent lg:block hidden"></div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6851B] text-primary-foreground relative z-10 shadow-[0_0_15px_rgba(246,133,27,0.3)]">
                   <span className="text-xl font-bold">3</span>
                 </div>
@@ -469,28 +461,8 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-[#F6851B]" />
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} MetaWill. All rights reserved.
+              &copy; {new Date().getFullYear()} MetaWill. All rights reserved.
             </p>
-          </div>
-          <div className="flex gap-4">
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-[#F6851B]"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-[#F6851B]"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-[#F6851B]"
-            >
-              Contact
-            </Link>
           </div>
         </div>
       </footer>
