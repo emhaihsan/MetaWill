@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Copy } from "lucide-react";
 
 export function ConnectButton() {
   const { address, isConnected } = useAccount();
@@ -52,7 +53,11 @@ export function ConnectButton() {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="hidden sm:flex">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="hidden sm:flex text-[#F6851B] border-[#F6851B]/20 hover:bg-[#F6851B]/10"
+              >
                 {getNetworkName(chainId)}
               </Button>
             </DropdownMenuTrigger>
@@ -70,12 +75,45 @@ export function ConnectButton() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button size="sm" className="flex gap-2" onClick={() => disconnect()}>
-            <Wallet className="h-4 w-4" /> {formatAddress(address)}
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="sm"
+                className="flex gap-2 bg-[#F6851B] hover:bg-[#F6851B]/90 text-white"
+              >
+                <Wallet className="h-4 w-4" /> {formatAddress(address)}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <div className="px-4 py-3">
+                <div className="mt-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(address);
+                    }}
+                    className="flex items-center gap-2 text-[#F6851B] hover:text-[#F6851B]/80"
+                  >
+                    <Copy className="h-4 w-4" />
+                    <span>Copy Full Address</span>
+                  </button>
+                </div>
+              </div>
+              <DropdownMenuItem
+                onClick={() => disconnect()}
+                className="text-red-600 focus:text-red-600 focus:bg-red-50"
+              >
+                Disconnect
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ) : (
-        <Button size="sm" className="flex gap-2" onClick={handleConnect}>
+        <Button
+          size="sm"
+          className="flex gap-2 bg-[#F6851B] hover:bg-[#F6851B]/90 text-white"
+          onClick={handleConnect}
+        >
           <Wallet className="h-4 w-4" /> Connect Wallet
         </Button>
       )}
