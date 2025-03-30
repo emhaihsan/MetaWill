@@ -7,7 +7,7 @@ export default function Why() {
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50 relative">
       <div className="absolute inset-0 bg-grid-[#F6851B]/5 [mask-image:linear-gradient(to_bottom,transparent,black,transparent)]"></div>
-      <div className="container px-4 md:px-6 relative">
+      <div className="px-4 md:px-6 relative">
         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
           <div className="flex items-center justify-center">
             <div className="relative h-[350px] w-[350px] sm:h-[400px] sm:w-[400px] lg:h-[450px] lg:w-[450px] animate-float-delay">

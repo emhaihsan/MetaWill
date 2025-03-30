@@ -3,15 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Shield,
-  ArrowLeft,
   Calendar,
   Users,
   Search,
   Filter,
   ChevronRight,
+  ArrowUpLeft,
   ArrowUpRight,
-  Hexagon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -33,6 +31,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Elements from "@/components/elements";
+import Navbar from "@/components/navbar";
+
+import Footer from "@/components/footer";
+import { activeCommitments, pastCommitments } from "@/dummies/allcommitments";
 
 export default function AllCommitmentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,119 +51,6 @@ export default function AllCommitmentsPage() {
     }
   }, []);
 
-  // Mock data for the commitments
-  const activeCommitments = [
-    {
-      id: "1",
-      title: "Complete 30 days of coding",
-      description: "Code for at least 1 hour every day for 30 days",
-      staked: "0.5 ETH",
-      deadline: "May 15, 2025",
-      validator: "0x8912...45ab",
-      status: "in-progress",
-      createdAt: "April 15, 2025",
-    },
-    {
-      id: "2",
-      title: "Finish blockchain certification",
-      description: "Complete all modules and pass the final exam",
-      staked: "0.75 ETH",
-      deadline: "June 2, 2025",
-      validator: "0x3421...87cd",
-      status: "in-progress",
-      createdAt: "May 2, 2025",
-    },
-    {
-      id: "3",
-      title: "Launch NFT collection",
-      description: "Create and launch a collection of 10 NFTs",
-      staked: "1.2 ETH",
-      deadline: "July 10, 2025",
-      validator: "0x6789...12ef",
-      status: "in-progress",
-      createdAt: "June 10, 2025",
-    },
-    {
-      id: "9",
-      title: "Complete Web3 course",
-      description: "Finish all modules of the advanced Web3 development course",
-      staked: "0.8 ETH",
-      deadline: "August 20, 2025",
-      validator: "0x1234...56gh",
-      status: "in-progress",
-      createdAt: "July 20, 2025",
-    },
-    {
-      id: "10",
-      title: "Build a DAO prototype",
-      description:
-        "Create a working prototype of a decentralized autonomous organization",
-      staked: "1.5 ETH",
-      deadline: "September 15, 2025",
-      validator: "0x7890...12ij",
-      status: "in-progress",
-      createdAt: "August 15, 2025",
-    },
-  ];
-
-  const pastCommitments = [
-    {
-      id: "4",
-      title: "Learn Solidity basics",
-      description: "Complete the beginner Solidity course",
-      staked: "0.3 ETH",
-      deadline: "March 1, 2025",
-      validator: "0x2345...67ab",
-      status: "completed",
-      createdAt: "February 1, 2025",
-      completedAt: "February 28, 2025",
-    },
-    {
-      id: "5",
-      title: "Build a DApp prototype",
-      description: "Create a working prototype of a decentralized application",
-      staked: "0.45 ETH",
-      deadline: "February 15, 2025",
-      validator: "0x8912...45ab",
-      status: "failed",
-      createdAt: "January 15, 2025",
-      completedAt: "February 15, 2025",
-    },
-    {
-      id: "6",
-      title: "Attend Web3 conference",
-      description: "Participate in at least 5 workshops at the conference",
-      staked: "0.25 ETH",
-      deadline: "January 20, 2025",
-      validator: "0x3421...87cd",
-      status: "completed",
-      createdAt: "December 20, 2024",
-      completedAt: "January 19, 2025",
-    },
-    {
-      id: "11",
-      title: "Complete smart contract audit",
-      description: "Perform a security audit on a smart contract",
-      staked: "0.6 ETH",
-      deadline: "March 10, 2025",
-      validator: "0x3456...78kl",
-      status: "completed",
-      createdAt: "February 10, 2025",
-      completedAt: "March 8, 2025",
-    },
-    {
-      id: "12",
-      title: "Implement wallet integration",
-      description: "Integrate multiple wallet providers into a dApp",
-      staked: "0.4 ETH",
-      deadline: "April 5, 2025",
-      validator: "0x9012...34mn",
-      status: "failed",
-      createdAt: "March 5, 2025",
-      completedAt: "April 5, 2025",
-    },
-  ];
-
   // Filter commitments based on search query
   const filteredActiveCommitments = activeCommitments.filter(
     (commitment) =>
@@ -173,7 +63,6 @@ export default function AllCommitmentsPage() {
       commitment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       commitment.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   // Sort commitments based on selected sort option
   const sortCommitments = (commitments) => {
     switch (sortBy) {
@@ -199,38 +88,20 @@ export default function AllCommitmentsPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50">
-      {/* Decorative elements */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
-        <div className="animate-pulse-slow absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-3xl"></div>
-        <div className="animate-pulse-slow absolute top-1/3 -left-20 h-60 w-60 rounded-full bg-primary/10 blur-3xl"></div>
-        <div className="animate-pulse-slow absolute bottom-1/4 right-1/4 h-60 w-60 rounded-full bg-primary/10 blur-3xl"></div>
+      <Elements />
 
-        <div className="absolute top-1/4 left-1/2 h-40 w-40 -translate-x-1/2 border border-primary/20 opacity-20">
-          <div className="absolute inset-0 animate-spin-slow border-t border-primary"></div>
-        </div>
+      <Navbar />
 
-        <div className="absolute bottom-20 left-20 h-20 w-20 animate-float">
-          <Hexagon className="h-full w-full text-primary/10" />
-        </div>
-        <div className="absolute top-40 right-20 h-16 w-16 animate-float-delay">
-          <Hexagon className="h-full w-full text-primary/10" />
-        </div>
-      </div>
-
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center">
-          <Link href="/dashboard" className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon" className="mr-2">
-              <ArrowLeft className="h-4 w-4" />
-              <span className="sr-only">Back to dashboard</span>
-            </Button>
-            <span className="inline-block font-bold">All Commitments</span>
-          </Link>
-        </div>
-      </header>
-
-      <main className="flex-1 container py-8">
+      <main className="flex-1 px-8 py-8">
         <div className="flex flex-col gap-8">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" className="gap-2" asChild>
+              <Link href="/dashboard">
+                <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
+              </Link>
+            </Button>
+            <h1 className="text-2xl font-bold">All Commitments</h1>
+          </div>
           {/* Search and Filter */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative w-full sm:max-w-xs">
@@ -625,36 +496,7 @@ export default function AllCommitmentsPage() {
         </div>
       </main>
 
-      <footer className="w-full border-t border-primary/10 bg-background py-6 relative">
-        <div className="container flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} MetaWill. All rights reserved.
-            </p>
-          </div>
-          <div className="flex gap-4">
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -42,7 +42,7 @@ export default function WhitepaperPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="flex-1 container py-10">
+      <main className="flex-1 py-10">
         <div className="prose prose-orange mx-auto max-w-4xl">
           <h1 className="text-4xl font-bold mb-6">
             MetaWill: Web3 Commitment Platform

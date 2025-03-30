@@ -5,16 +5,15 @@ import Link from "next/link";
 import {
   Shield,
   Wallet,
-  ArrowLeft,
   Calendar,
   Search,
   Filter,
   ChevronRight,
-  Hexagon,
   CheckCircle,
   XCircle,
   Clock,
   AlertCircle,
+  ArrowUpLeft,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -47,6 +46,13 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Elements from "@/components/elements";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+import {
+  pendingRequests,
+  completedRequests,
+} from "@/dummies/validationrequest";
 
 export default function ValidationRequestsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,83 +62,6 @@ export default function ValidationRequestsPage() {
   const [dialogAction, setDialogAction] = useState<"approve" | "reject" | null>(
     null
   );
-
-  // Mock data for validation requests
-  const pendingRequests = [
-    {
-      id: "1",
-      user: "0x9876...54fe",
-      title: "Complete Ethereum whitepaper analysis",
-      description: "Write a 10-page analysis of the Ethereum whitepaper",
-      staked: "0.6 ETH",
-      deadline: "May 20, 2025",
-      status: "pending-validation",
-      createdAt: "April 20, 2025",
-    },
-    {
-      id: "2",
-      user: "0x5432...21dc",
-      title: "Run 100km in a month",
-      description: "Track and complete 100km of running within 30 days",
-      staked: "0.4 ETH",
-      deadline: "May 5, 2025",
-      status: "pending-validation",
-      createdAt: "April 5, 2025",
-    },
-    {
-      id: "3",
-      user: "0x7890...12ij",
-      title: "Learn React Native",
-      description: "Complete a React Native course and build a mobile app",
-      staked: "0.5 ETH",
-      deadline: "June 15, 2025",
-      status: "pending-validation",
-      createdAt: "May 15, 2025",
-    },
-  ];
-
-  const completedRequests = [
-    {
-      id: "4",
-      user: "0x3456...78kl",
-      title: "Build a portfolio website",
-      description:
-        "Create a personal portfolio website with at least 5 projects",
-      staked: "0.3 ETH",
-      deadline: "March 10, 2025",
-      status: "approved",
-      createdAt: "February 10, 2025",
-      completedAt: "March 8, 2025",
-      feedback:
-        "Great work! The portfolio looks professional and showcases your skills well.",
-    },
-    {
-      id: "5",
-      user: "0x9012...34mn",
-      title: "Complete 50 leetcode problems",
-      description: "Solve at least 50 leetcode problems of varying difficulty",
-      staked: "0.35 ETH",
-      deadline: "April 1, 2025",
-      status: "rejected",
-      createdAt: "March 1, 2025",
-      completedAt: "April 1, 2025",
-      feedback:
-        "Only 42 problems were completed by the deadline, which is less than the required 50.",
-    },
-    {
-      id: "6",
-      user: "0x5678...90op",
-      title: "Write a technical blog post",
-      description:
-        "Write and publish a technical blog post about blockchain technology",
-      staked: "0.25 ETH",
-      deadline: "February 20, 2025",
-      status: "approved",
-      createdAt: "January 20, 2025",
-      completedAt: "February 18, 2025",
-      feedback: "Excellent article with clear explanations and good examples.",
-    },
-  ];
 
   // Filter requests based on search query
   const filteredPendingRequests = pendingRequests.filter(
@@ -190,37 +119,18 @@ export default function ValidationRequestsPage() {
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50">
       {/* Decorative elements */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
-        <div className="animate-pulse-slow absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-3xl"></div>
-        <div className="animate-pulse-slow absolute top-1/3 -left-20 h-60 w-60 rounded-full bg-primary/10 blur-3xl"></div>
-        <div className="animate-pulse-slow absolute bottom-1/4 right-1/4 h-60 w-60 rounded-full bg-primary/10 blur-3xl"></div>
-
-        <div className="absolute top-1/4 left-1/2 h-40 w-40 -translate-x-1/2 border border-primary/20 opacity-20">
-          <div className="absolute inset-0 animate-spin-slow border-t border-primary"></div>
-        </div>
-
-        <div className="absolute bottom-20 left-20 h-20 w-20 animate-float">
-          <Hexagon className="h-full w-full text-primary/10" />
-        </div>
-        <div className="absolute top-40 right-20 h-16 w-16 animate-float-delay">
-          <Hexagon className="h-full w-full text-primary/10" />
-        </div>
-      </div>
-
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center">
-          <Link href="/dashboard" className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon" className="mr-2">
-              <ArrowLeft className="h-4 w-4" />
-              <span className="sr-only">Back to dashboard</span>
-            </Button>
-            <span className="inline-block font-bold">Validation Requests</span>
-          </Link>
-        </div>
-      </header>
-
-      <main className="flex-1 container py-8">
+      <Elements />
+      <Navbar />
+      <main className="flex-1 px-8 py-8">
         <div className="flex flex-col gap-8">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" className="gap-2" asChild>
+              <Link href="/dashboard">
+                <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
+              </Link>
+            </Button>
+            <h1 className="text-2xl font-bold">All Commitments</h1>
+          </div>
           {/* Search and Filter */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative w-full sm:max-w-xs">
@@ -576,36 +486,7 @@ export default function ValidationRequestsPage() {
         </div>
       </main>
 
-      <footer className="w-full border-t border-primary/10 bg-background py-6 relative">
-        <div className="container flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} MetaWill. All rights reserved.
-            </p>
-          </div>
-          <div className="flex gap-4">
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

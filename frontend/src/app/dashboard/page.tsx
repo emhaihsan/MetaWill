@@ -14,7 +14,7 @@ export default function DashboardPage() {
       <Elements />
       <Navbar />
 
-      <main className="flex-1 container py-8 px-8">
+      <main className="flex-1 py-8 px-8">
         <div className="flex flex-col gap-8">
           {/* Dashboard Header */}
           <Header />

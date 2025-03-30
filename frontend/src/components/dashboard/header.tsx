@@ -22,7 +22,10 @@ export default function Header() {
             <CheckCircle className="h-4 w-4" /> View All Validation Requests
           </Link>
         </Button>
-        <Button className="gap-2" asChild>
+        <Button
+          className="gap-2 bg-[#F6851B] hover:bg-[#F6851B]/90 text-white"
+          asChild
+        >
           <Link href="/dashboard/new-commitment">
             <Plus className="h-4 w-4" /> Create New Commitment
           </Link>
