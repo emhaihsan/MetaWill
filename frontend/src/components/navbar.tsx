@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Shield } from "lucide-react";
+import Image from "next/image";
 import { ConnectButton } from "@/components/connect-button";
 import { useAccount } from "wagmi";
 import { useRouter, usePathname } from "next/navigation";
@@ -45,7 +45,13 @@ export default function Navbar() {
       <div className="flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <div className="flex gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
-            <Shield className="h-6 w-6 text-[#F6851B]" />
+            <Image
+              src="/metawillicon.png"
+              alt="MetaWill Logo"
+              width={24}
+              height={24}
+              className="h-6 w-6"
+            />
             <span className="inline-block font-bold">MetaWill</span>
           </Link>
         </div>

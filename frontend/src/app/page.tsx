@@ -7,7 +7,13 @@ import Features from "@/components/landing/features";
 import Process from "@/components/landing/process";
 import Why from "@/components/landing/why";
 import CTA from "@/components/landing/cta";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export const metadata: Metadata = {
   title: "MetaWill | Secure Your Digital Legacy with Blockchain Technology",

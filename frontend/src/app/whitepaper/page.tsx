@@ -1,6 +1,12 @@
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export const metadata: Metadata = {
   title: "MetaWill Whitepaper | Web3 Commitment Platform",
