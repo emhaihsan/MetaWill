@@ -2,3 +2,5 @@ MetaWill_PRD.md
 
 # Foundry
 contract/lib/
+contract/broadcast/
+contract/deploylog.txt
