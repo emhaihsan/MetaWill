@@ -7,6 +7,43 @@ import Features from "@/components/landing/features";
 import Process from "@/components/landing/process";
 import Why from "@/components/landing/why";
 import CTA from "@/components/landing/cta";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MetaWill | Secure Your Digital Legacy with Blockchain Technology",
+  description:
+    "MetaWill helps you secure your digital assets and ensure they're transferred to your loved ones when you're gone. Built on blockchain for maximum security and transparency.",
+  keywords: [
+    "digital legacy",
+    "crypto inheritance",
+    "blockchain will",
+    "digital asset transfer",
+    "estate planning",
+    "web3 inheritance",
+  ],
+  openGraph: {
+    title: "MetaWill | Secure Your Digital Legacy with Blockchain Technology",
+    description:
+      "MetaWill helps you secure your digital assets and ensure they're transferred to your loved ones when you're gone. Built on blockchain for maximum security and transparency.",
+    url: "https://metawill.vercel.app",
+    type: "website",
+    images: [
+      {
+        url: "/home-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "MetaWill - Digital Legacy Platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MetaWill | Secure Your Digital Legacy with Blockchain Technology",
+    description:
+      "MetaWill helps you secure your digital assets and ensure they're transferred to your loved ones when you're gone. Built on blockchain for maximum security and transparency.",
+    images: ["/home-twitter-image.jpg"],
+  },
+};
 
 export default function Home() {
   return (

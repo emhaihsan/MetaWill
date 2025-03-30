@@ -1,25 +1,49 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MetaWill Whitepaper | Web3 Commitment Platform",
+  description:
+    "Explore the technical details of MetaWill - a decentralized platform for personal accountability with financial stakes built on blockchain technology.",
+  keywords: [
+    "MetaWill whitepaper",
+    "web3 commitment",
+    "blockchain accountability",
+    "smart contracts",
+    "ethereum staking",
+    "decentralized promises",
+  ],
+  openGraph: {
+    title: "MetaWill Whitepaper | Web3 Commitment Platform",
+    description:
+      "Explore the technical details of MetaWill - a decentralized platform for personal accountability with financial stakes built on blockchain technology.",
+    url: "https://metawill.vercel.app/whitepaper",
+    type: "article",
+    images: [
+      {
+        url: "/whitepaper-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "MetaWill Whitepaper",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MetaWill Whitepaper | Web3 Commitment Platform",
+    description:
+      "Explore the technical details of MetaWill - a decentralized platform for personal accountability with financial stakes built on blockchain technology.",
+    images: ["/whitepaper-twitter-image.jpg"],
+  },
+};
 
 export default function WhitepaperPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
-          <div className="flex gap-6 md:gap-10">
-            <Link href="/" className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="mr-2">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="sr-only">Back to home</span>
-              </Button>
-              <span className="inline-block font-bold">
-                MetaWill Whitepaper
-              </span>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
       <main className="flex-1 container py-10">
         <div className="prose prose-orange mx-auto max-w-4xl">
           <h1 className="text-4xl font-bold mb-6">
@@ -349,35 +373,7 @@ export default function WhitepaperPage() {
           </p>
         </div>
       </main>
-      <footer className="w-full border-t border-primary/10 bg-background py-6 relative">
-        <div className="container flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
-          <div className="flex items-center gap-2">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} MetaWill. All rights reserved.
-            </p>
-          </div>
-          <div className="flex gap-4">
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
