@@ -26,6 +26,9 @@ export function ConnectButton() {
   const { switchChain } = useSwitchChain();
 
   const handleConnect = () => {
+    // Set connection event flag before connecting
+    sessionStorage.setItem("connectionEvent", "true");
+
     const connector = connectors.find((c) => c.name === "MetaMask");
     if (connector) {
       connect({ connector });

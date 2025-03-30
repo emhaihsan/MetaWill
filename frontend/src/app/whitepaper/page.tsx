@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Metadata } from "next";
