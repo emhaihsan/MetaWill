@@ -249,4 +249,130 @@ contract MetaWillFactoryTest is Test {
         assertEq(validatorCommitments[0], commitment1);
         assertEq(validatorCommitments[1], commitment2);
     }
+
+    // Test untuk withdraw hasil donasi
+    function testWithdrawDonationFunds() public {
+        // Setup - donasi gagal dari commitment
+        address creator = address(5);
+        address validator = address(2);
+        uint256 stakeAmount = 0.5 ether;
+
+        // Berikan ETH ke creator
+        vm.deal(creator, 1 ether);
+
+        // Buat komitmen dengan stake
+        vm.prank(creator);
+        address commitmentAddress = factory.createCommitment{
+            value: stakeAmount
+        }(
+            "Test Commitment",
+            "Description",
+            block.timestamp + 1 days,
+            validator,
+            0 // Pilih donasi pertama
+        );
+
+        // Ambil instance komitmen
+        MetaWillCommitment commitment = MetaWillCommitment(commitmentAddress);
+
+        // Creator melaporkan kegagalan
+        vm.prank(creator);
+        commitment.reportCompletion(false);
+
+        // Verifikasi donasi telah diterima
+        assertEq(donation1.getBalance(), stakeAmount);
+        assertEq(donation1.getDonorContribution(creator), stakeAmount);
+
+        // Setup penerima dana donasi
+        address payable recipient = payable(address(6));
+        uint256 initialRecipientBalance = recipient.balance;
+
+        // Owner mencairkan dana donasi langsung dari kontrak donasi
+        vm.prank(owner);
+        donation1.withdrawFunds(recipient, stakeAmount);
+
+        // Verifikasi dana telah dicairkan
+        assertEq(donation1.getBalance(), 0);
+        assertEq(recipient.balance, initialRecipientBalance + stakeAmount);
+    }
+
+    // Test untuk withdraw donasi dengan non-owner (harus gagal)
+    function testFailWithdrawDonationFundsNonOwner() public {
+        // Setup - donasi gagal dari commitment
+        address creator = address(5);
+        address validator = address(2);
+        uint256 stakeAmount = 0.5 ether;
+
+        // Berikan ETH ke creator
+        vm.deal(creator, 1 ether);
+
+        // Buat komitmen dengan stake
+        vm.prank(creator);
+        address commitmentAddress = factory.createCommitment{
+            value: stakeAmount
+        }(
+            "Test Commitment",
+            "Description",
+            block.timestamp + 1 days,
+            validator,
+            0 // Pilih donasi pertama
+        );
+
+        // Ambil instance komitmen
+        MetaWillCommitment commitment = MetaWillCommitment(commitmentAddress);
+
+        // Creator melaporkan kegagalan
+        vm.prank(creator);
+        commitment.reportCompletion(false);
+
+        // Verifikasi donasi telah diterima
+        assertEq(donation1.getBalance(), stakeAmount);
+
+        // Setup penerima dana donasi
+        address payable recipient = payable(address(6));
+
+        // Non-owner mencoba mencairkan dana donasi (harus gagal)
+        vm.prank(user1);
+        donation1.withdrawFunds(recipient, stakeAmount);
+    }
+
+    // Test untuk withdraw dengan jumlah yang melebihi saldo (harus gagal)
+    function testFailWithdrawDonationFundsInsufficientBalance() public {
+        // Setup - donasi gagal dari commitment
+        address creator = address(5);
+        address validator = address(2);
+        uint256 stakeAmount = 0.5 ether;
+
+        // Berikan ETH ke creator
+        vm.deal(creator, 1 ether);
+
+        // Buat komitmen dengan stake
+        vm.prank(creator);
+        address commitmentAddress = factory.createCommitment{
+            value: stakeAmount
+        }(
+            "Test Commitment",
+            "Description",
+            block.timestamp + 1 days,
+            validator,
+            0 // Pilih donasi pertama
+        );
+
+        // Ambil instance komitmen
+        MetaWillCommitment commitment = MetaWillCommitment(commitmentAddress);
+
+        // Creator melaporkan kegagalan
+        vm.prank(creator);
+        commitment.reportCompletion(false);
+
+        // Verifikasi donasi telah diterima
+        assertEq(donation1.getBalance(), stakeAmount);
+
+        // Setup penerima dana donasi
+        address payable recipient = payable(address(6));
+
+        // Owner mencoba mencairkan dana donasi dengan jumlah yang melebihi saldo (harus gagal)
+        vm.prank(owner);
+        donation1.withdrawFunds(recipient, stakeAmount + 1 ether);
+    }
 }
