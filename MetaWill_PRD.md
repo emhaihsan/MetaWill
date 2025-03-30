@@ -4,7 +4,7 @@
 
 **Project Name:** MetaWill  
 **Platform Type:** Web3 Commitment Platform  
-**Hackathon:** Metamask Hackathon
+**Hackathon:** Linea
 
 ## Executive Summary
 
@@ -39,8 +39,8 @@ The platform uses blockchain technology to ensure transparency, immutability, an
 
 - **Description:** Users must connect their Ethereum wallet to access the platform
 - **Requirements:**
-  - Integration with RainbowKit for wallet connection
-  - Support for multiple wallet providers
+  - Integration with MetaMask SDK for wallet connection
+  - Support for MetaMask wallet
   - Secure authentication flow
   - Wallet address used as unique user identifier
 
