@@ -208,11 +208,15 @@ export default function AllCommitmentsPage() {
                           Report Completion
                         </Button>
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
-                          className="gap-1 text-primary"
+                          className="gap-1"
+                          asChild
                         >
-                          View Details <ChevronRight className="h-4 w-4" />
+                          <Link href={`/dashboard/commitment/${commitment.id}`}>
+                            <span>View Details</span>
+                            <ArrowUpRight className="h-3 w-3" />
+                          </Link>
                         </Button>
                       </div>
                     </CardFooter>
