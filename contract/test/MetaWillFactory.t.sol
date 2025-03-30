@@ -16,7 +16,7 @@ contract MetaWillFactoryTest is Test {
     address public user2 = address(3);
     address public validator = address(4);
 
-    uint256 public minStake = 0.01 ether;
+    uint256 public minStake = 0.001 ether;
     uint256 public maxStake = 10 ether;
 
     function setUp() public {
@@ -87,7 +87,7 @@ contract MetaWillFactoryTest is Test {
         vm.stopPrank();
     }
 
-    function testGetDonationAddresses() public {
+    function testGetDonationAddresses() public view {
         (address[] memory addresses, string[] memory names) = factory
             .getDonationAddresses();
 
@@ -135,5 +135,118 @@ contract MetaWillFactoryTest is Test {
         assertEq(addresses[1], newDonation);
 
         vm.stopPrank();
+    }
+
+    // Tambahkan di MetaWillFactory.t.sol
+    function testGetUserCommitments() public {
+        // Setup
+        address user = address(1);
+        vm.startPrank(user);
+        vm.deal(user, 1 ether); // Memberikan ETH ke user
+
+        // Create multiple commitments
+        address commitment1 = factory.createCommitment{value: 0.01 ether}(
+            "Commitment 1",
+            "Description 1",
+            block.timestamp + 1 days,
+            address(2),
+            0
+        );
+        address commitment2 = factory.createCommitment{value: 0.01 ether}(
+            "Commitment 2",
+            "Description 2",
+            block.timestamp + 1 days,
+            address(2),
+            0
+        );
+
+        // Get user commitments
+        address[] memory userCommitments = factory.getUserCommitments(user);
+
+        // Verify
+        assertEq(userCommitments.length, 2);
+        assertEq(userCommitments[0], commitment1);
+        assertEq(userCommitments[1], commitment2);
+
+        vm.stopPrank();
+    }
+
+    // Tambahkan di MetaWillDonation.t.sol
+    function testDonationAfterFailedCommitment() public {
+        // Setup
+        address creator = address(1);
+        address validator = address(2);
+        uint256 stakeAmount = 0.5 ether;
+
+        // Berikan ETH ke creator
+        vm.deal(creator, 1 ether);
+
+        // Buat komitmen dengan stake
+        vm.prank(creator);
+        address commitmentAddress = factory.createCommitment{
+            value: stakeAmount
+        }(
+            "Test Commitment",
+            "Description",
+            block.timestamp + 1 days,
+            validator,
+            0 // Pilih donasi pertama
+        );
+
+        // Ambil instance komitmen
+        MetaWillCommitment commitment = MetaWillCommitment(commitmentAddress);
+
+        // Catat saldo awal donasi
+        uint256 initialDonationBalance = address(donation1).balance;
+
+        // Creator melaporkan kegagalan
+        vm.prank(creator);
+        commitment.reportCompletion(false); // false = gagal
+
+        // Cek saldo akhir donasi (seharusnya bertambah sebesar stake)
+        uint256 finalDonationBalance = address(donation1).balance;
+        assertEq(finalDonationBalance - initialDonationBalance, stakeAmount);
+
+        // Cek kontribusi donor
+        uint256 creatorContribution = donation1.getDonorContribution(creator);
+        assertEq(creatorContribution, stakeAmount);
+    }
+
+    // Tambahkan untuk validator commitments (setelah implementasi)
+    function testGetValidatorCommitments() public {
+        // Setup
+        address creator = address(1);
+        address validator = address(2);
+
+        vm.startPrank(creator);
+        vm.deal(creator, 1 ether);
+
+        // Create commitments with the same validator
+        address commitment1 = factory.createCommitment{value: 0.1 ether}(
+            "Commitment 1",
+            "Description 1",
+            block.timestamp + 1 days,
+            validator,
+            0
+        );
+        address commitment2 = factory.createCommitment{value: 0.1 ether}(
+            "Commitment 2",
+            "Description 2",
+            block.timestamp + 1 days,
+            validator,
+            0
+        );
+
+        vm.stopPrank();
+
+        // Get validator commitments
+        address[] memory validatorCommitments = factory.getValidatorCommitments(
+            validator
+        );
+
+        // Verify
+        assertEq(validatorCommitments.length, 2);
+        assertEq(validatorCommitments[0], commitment1);
+        assertEq(validatorCommitments[1], commitment2);
     }
 }

@@ -58,4 +58,13 @@ contract MetaWillDonation is IMetaWillDonation {
     function getTotalDonations() external view returns (uint256) {
         return totalDonations;
     }
+
+    function recordDonation(address donor, uint256 amount) external override {
+        // Hanya komitmen yang bisa memanggil
+        require(msg.sender != address(0), "Invalid caller");
+
+        totalDonations += amount;
+        donorContributions[donor] += amount;
+        emit DonationReceived(donor, amount);
+    }
 }

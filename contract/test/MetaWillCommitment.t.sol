@@ -4,13 +4,49 @@ pragma solidity ^0.8.19;
 import "forge-std/Test.sol";
 import "../src/MetaWillCommitment.sol";
 import "../src/interfaces/IMetaWillCommitment.sol";
+import "../src/interfaces/IMetaWillDonation.sol";
+
+// Mock untuk kontrak donasi
+contract MockDonation is IMetaWillDonation {
+    mapping(address => uint256) public donorContributions;
+    uint256 public totalDonations;
+
+    function recordDonation(address donor, uint256 amount) external override {
+        donorContributions[donor] += amount;
+        totalDonations += amount;
+        emit DonationReceived(donor, amount);
+    }
+
+    function withdrawFunds(
+        address payable recepient,
+        uint256 amount
+    ) external override {}
+
+    function getDonorContribution(
+        address donor
+    ) external view override returns (uint256) {
+        return donorContributions[donor];
+    }
+
+    function getBalance() external view override returns (uint256) {
+        return address(this).balance;
+    }
+
+    function getTotalDonations() external view override returns (uint256) {
+        return totalDonations;
+    }
+
+    // Fungsi untuk menerima ETH
+    receive() external payable {}
+}
 
 contract MetaWillCommitmentTest is Test {
     MetaWillCommitment public commitment;
+    MockDonation public mockDonation;
 
     address public creator = address(1);
     address public validator = address(2);
-    address public donationAddress = address(3);
+    address public donationAddress;
 
     string public title = "Test Commitment";
     string public description = "This is a test commitment";
@@ -20,7 +56,14 @@ contract MetaWillCommitmentTest is Test {
     function setUp() public {
         deadline = block.timestamp + 30 days;
 
+        // Deploy mock donation contract
+        mockDonation = new MockDonation();
+        donationAddress = address(mockDonation);
+
+        // Fund this contract
         vm.deal(address(this), stakeAmount);
+
+        // Create commitment
         commitment = new MetaWillCommitment{value: stakeAmount}(
             creator,
             validator,
@@ -70,6 +113,15 @@ contract MetaWillCommitmentTest is Test {
     }
 
     function testCreatorReportFailure() public {
+        // Pastikan donationAddress memiliki kode (mock)
+        assertTrue(
+            donationAddress.code.length > 0,
+            "Donation address should have code"
+        );
+
+        // Catat saldo awal
+        uint256 initialDonationBalance = address(donationAddress).balance;
+
         vm.prank(creator);
         commitment.reportCompletion(false);
 
@@ -91,7 +143,13 @@ contract MetaWillCommitmentTest is Test {
         );
 
         // Check that funds were sent to donation address
-        assertEq(donationAddress.balance, stakeAmount);
+        assertEq(
+            address(donationAddress).balance - initialDonationBalance,
+            stakeAmount
+        );
+
+        // Verifikasi donasi tercatat
+        assertEq(mockDonation.getDonorContribution(creator), stakeAmount);
     }
 
     function testValidatorConfirmSuccess() public {
@@ -127,6 +185,15 @@ contract MetaWillCommitmentTest is Test {
     }
 
     function testValidatorDisputeSuccess() public {
+        // Pastikan donationAddress memiliki kode (mock)
+        assertTrue(
+            donationAddress.code.length > 0,
+            "Donation address should have code"
+        );
+
+        // Catat saldo awal
+        uint256 initialDonationBalance = address(donationAddress).balance;
+
         // Creator reports success
         vm.prank(creator);
         commitment.reportCompletion(true);
@@ -155,10 +222,25 @@ contract MetaWillCommitmentTest is Test {
         assertEq(_validatorReportedOutcome, false);
 
         // Check that funds were sent to donation address
-        assertEq(donationAddress.balance, stakeAmount);
+        assertEq(
+            address(donationAddress).balance - initialDonationBalance,
+            stakeAmount
+        );
+
+        // Verifikasi donasi tercatat
+        assertEq(mockDonation.getDonorContribution(creator), stakeAmount);
     }
 
     function testResolveAfterDeadline() public {
+        // Pastikan donationAddress memiliki kode (mock)
+        assertTrue(
+            donationAddress.code.length > 0,
+            "Donation address should have code"
+        );
+
+        // Catat saldo awal
+        uint256 initialDonationBalance = address(donationAddress).balance;
+
         // Fast forward past deadline
         vm.warp(deadline + 1 days);
 
@@ -183,6 +265,58 @@ contract MetaWillCommitmentTest is Test {
         );
 
         // Check that funds were sent to donation address
-        assertEq(donationAddress.balance, stakeAmount);
+        assertEq(
+            address(donationAddress).balance - initialDonationBalance,
+            stakeAmount
+        );
+
+        // Verifikasi donasi tercatat
+        assertEq(mockDonation.getDonorContribution(creator), stakeAmount);
+    }
+
+    // Test tambahan: validator melaporkan kegagalan langsung
+    function testValidatorReportFailureImmediately() public {
+        // Pastikan donationAddress memiliki kode (mock)
+        assertTrue(
+            donationAddress.code.length > 0,
+            "Donation address should have code"
+        );
+
+        // Catat saldo awal
+        uint256 initialDonationBalance = address(donationAddress).balance;
+
+        // Validator melaporkan kegagalan langsung
+        vm.prank(validator);
+        commitment.validateCompletion(false);
+
+        (
+            ,
+            ,
+            ,
+            ,
+            ,
+            ,
+            IMetaWillCommitment.CommitmentStatus _status,
+            ,
+            bool _validatorConfirmed,
+            bool _validatorReportedOutcome
+        ) = commitment.getCommitmentDetails();
+
+        // Komitmen harus langsung gagal
+        assertEq(
+            uint(_status),
+            uint(IMetaWillCommitment.CommitmentStatus.CompletedFailure)
+        );
+        assertEq(_validatorConfirmed, true);
+        assertEq(_validatorReportedOutcome, false);
+
+        // Dana harus dikirim ke alamat donasi
+        assertEq(
+            address(donationAddress).balance - initialDonationBalance,
+            stakeAmount
+        );
+
+        // Verifikasi donasi tercatat
+        assertEq(mockDonation.getDonorContribution(creator), stakeAmount);
     }
 }

@@ -15,6 +15,9 @@ contract MetaWillFactory is IMetaWillFactory {
 
     // Track all commitments created by users
     mapping(address => address[]) public userCommitments;
+    // Track all commitments that need to be validated
+    mapping(address => address[]) public validatorCommitments;
+
     address[] public allCommitments;
 
     // Additional events not defined in the interface
@@ -93,6 +96,8 @@ contract MetaWillFactory is IMetaWillFactory {
             selectedDonation
         );
 
+        validatorCommitments[_validator].push(commitmentAddress);
+
         return commitmentAddress;
     }
 
@@ -170,6 +175,12 @@ contract MetaWillFactory is IMetaWillFactory {
 
     function getDonationAddressCount() external view returns (uint256) {
         return donationAddresses.length;
+    }
+
+    function getValidatorCommitments(
+        address _validator
+    ) external view returns (address[] memory) {
+        return validatorCommitments[_validator];
     }
 
     function updateStakeLimits(uint256 _minStake, uint256 _maxStake) external {

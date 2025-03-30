@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "./interfaces/IMetaWillCommitment.sol";
+import "./interfaces/IMetaWillDonation.sol";
 
 contract MetaWillCommitment is IMetaWillCommitment {
     // Commitment details
@@ -66,10 +67,21 @@ contract MetaWillCommitment is IMetaWillCommitment {
         validatorReportedSuccess = _success;
         emit StatusReported(validator, _success);
 
-        // If creator has already reported, resolve the commitment
-        if (creatorReportedSuccess || block.timestamp > deadline) {
+        // Jika validator melaporkan kegagalan, langsung selesaikan sebagai gagal
+        if (!_success) {
+            _resolveCommitment(false);
+            return;
+        }
+
+        // Jika creator sudah melaporkan keberhasilan dan validator juga, selesaikan sebagai berhasil
+        if (creatorReportedSuccess) {
+            _resolveCommitment(true);
+        }
+        // Jika deadline sudah lewat, selesaikan berdasarkan laporan validator
+        else if (block.timestamp > deadline) {
             _resolveCommitment(_success);
         }
+        // Jika tidak, tunggu laporan creator
     }
 
     // Anyone can trigger resolution after deadline
@@ -106,6 +118,10 @@ contract MetaWillCommitment is IMetaWillCommitment {
         } else {
             status = CommitmentStatus.CompletedFailure;
             // Send funds to donation address
+            IMetaWillDonation(donationAddress).recordDonation(
+                creator,
+                stakeAmount
+            );
             (bool sent, ) = donationAddress.call{value: stakeAmount}("");
             require(sent, "Failed to donate funds");
             emit FundsDonated(donationAddress, stakeAmount);

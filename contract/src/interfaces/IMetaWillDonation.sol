@@ -33,4 +33,9 @@ interface IMetaWillDonation {
     /// @notice Gets the total amount of donations received
     /// @return Total donations received in ETH
     function getTotalDonations() external view returns (uint256);
+
+    /// @notice Records a donation from a donor
+    /// @param donor Address of the donor
+    /// @param amount Amount of ETH donated
+    function recordDonation(address donor, uint256 amount) external;
 }
