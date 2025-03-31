@@ -1,17 +1,17 @@
 # MetaWill
 
-<img src="frontend/public/logo.png" alt="MetaWill Logo" width="120"/>
+<img src="frontend/public/metawillicon.png" alt="MetaWill Logo" width="120"/>
 
 MetaWill is a Web3 platform designed to help users fulfill their commitments by leveraging financial incentives and transparent blockchain-based validation mechanisms on the Linea network.
 
 ## Overview
 
-MetaWill enables users to create blockchain-backed commitments, where they stake funds as collateral to ensure they follow through on their promises. If commitments are fulfilled (validated by trusted validators), users receive their funds back. If not, the funds are donated to selected charitable causes.
+MetaWill enables users to create blockchain-backed commitments, where they stake ETH as collateral to ensure they follow through on their promises. If commitments are fulfilled (validated by trusted validators), users receive their funds back. If not, the funds are donated to selected charitable causes.
 
 ## Key Features
 
 - **Blockchain Commitments**: Create binding commitment contracts with specific goals and deadlines
-- **Financial Incentives**: Deposit funds as collateral to motivate commitment fulfillment
+- **Financial Incentives**: Deposit ETH as collateral to motivate commitment fulfillment
 - **Transparent Validation**: Third-party validation through a decentralized system
 - **Social Impact**: Unclaimed funds from unfulfilled commitments are donated to selected charities
 - **Wallet Integration**: Seamless connection with MetaMask and support for Linea networks
@@ -21,15 +21,35 @@ MetaWill enables users to create blockchain-backed commitments, where they stake
 ### Frontend
 
 - **Framework**: Next.js 15 with App Router
-- **UI**: Tailwind CSS v4 with custom theme configuration
+- **UI**: Tailwind CSS with shadcn/ui components
 - **State Management**: React Hooks
-- **Wallet Integration**: Wagmi, Viem, MetaMask SDK
+- **Wallet Integration**: Wagmi, Viem
+- **Blockchain Interaction**: Custom API endpoints for contract interaction
 
 ### Blockchain
 
-- **Network**: Linea (Mainnet and Sepolia Testnet)
-- **Smart Contracts**: Solidity (coming soon)
-- **Web3 Integration**: Wagmi, Viem
+- **Network**: Linea Sepolia Testnet
+- **Smart Contracts**: Solidity with Foundry for development and testing
+- **Contract Architecture**: Factory pattern with MetaWillFactory and MetaWillCommitment contracts
+
+## Project Structure
+
+```
+metawill/
+├── contract/            # Smart contract code (Solidity)
+│   ├── src/             # Contract source files
+│   ├── test/            # Contract test files
+│   └── script/          # Deployment scripts
+├── frontend/            # Next.js frontend application
+│   ├── src/             # Source code
+│   │   ├── app/         # Next.js app router pages
+│   │   ├── components/  # React components
+│   │   ├── hooks/       # Custom React hooks
+│   │   ├── lib/         # Utility functions and configurations
+│   │   └── abi/         # Contract ABIs
+│   └── public/          # Static assets
+└── README.md            # This file
+```
 
 ## Getting Started
 
@@ -37,14 +57,15 @@ MetaWill enables users to create blockchain-backed commitments, where they stake
 
 - Node.js 18+ and npm
 - MetaMask wallet extension
+- Linea Sepolia testnet configured in MetaMask
 
 ### Installation
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/MetaWill.git
-cd MetaWill
+git clone https://github.com/yourusername/metawill.git
+cd metawill
 ```
 
 2. Install frontend dependencies:
@@ -54,50 +75,39 @@ cd frontend
 npm install
 ```
 
-3. Run the development server:
+3. Start the development server:
 
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-## Project Structure
+### Smart Contract Development
 
-```
-metawill/
-├── frontend/               # Next.js frontend application
-│   ├── public/             # Static assets
-│   ├── src/
-│   │   ├── app/            # Next.js App Router pages
-│   │   ├── components/     # Reusable UI components
-│   │   ├── lib/            # Utility functions and configurations
-│   │   └── ...
-│   ├── tailwind.config.ts  # Tailwind CSS configuration
-│   └── ...
-├── contracts/              # Smart contracts (coming soon)
-└── ...
+1. Install Foundry:
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
 ```
 
-## Connecting to Linea
+2. Build and test contracts:
 
-MetaWill is built on the Linea blockchain network. To interact with the application:
+```bash
+cd contract
+forge build
+forge test
+```
 
-1. Install MetaMask browser extension
-2. Connect your wallet using the "Connect Wallet" button
-3. Switch to Linea Mainnet or Linea Sepolia (testnet) when prompted
+## Features
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+- **Dashboard**: View active commitments, past commitments, and validation requests
+- **Create Commitment**: Create new commitments with title, description, deadline, stake amount, and validator
+- **Validation**: Validate commitments as a third-party validator
+- **Commitment Details**: View detailed information about each commitment
+- **Reporting**: Report completion status for commitments
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- [Linea](https://linea.build/) - Layer 2 blockchain solution
-- [Next.js](https://nextjs.org/) - React framework
-- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
-- [Wagmi](https://wagmi.sh/) - React Hooks for Ethereum

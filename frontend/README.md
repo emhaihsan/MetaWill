@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MetaWill Frontend
+
+<img src="public/mascott.png" alt="MetaWill Logo" width="120"/>
+
+The frontend application for MetaWill, a decentralized platform for creating and managing personal commitments with financial accountability on the Linea blockchain.
+
+## Overview
+
+This Next.js application provides the user interface for MetaWill, allowing users to:
+
+- Create new commitments with ETH stakes
+- View and manage their active and past commitments
+- Validate commitments as a third-party validator
+- Track commitment progress and outcomes
+- Connect with the Linea blockchain through their wallet
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **UI Components**: Tailwind CSS with shadcn/ui
+- **State Management**: React Hooks
+- **Blockchain Integration**:
+  - Wagmi for React hooks
+  - Viem for Ethereum interactions
+  - Custom API endpoints for contract interaction
+- **Authentication**: Wallet-based authentication
+
+## Project Structure
+
+```
+frontend/
+├── public/             # Static assets
+├── src/
+│   ├── abi/            # Contract ABIs
+│   ├── app/            # Next.js app router pages
+│   │   ├── api/        # API routes for blockchain interaction
+│   │   ├── dashboard/  # Dashboard and commitment management pages
+│   │   └── ...         # Other pages
+│   ├── components/     # Reusable UI components
+│   ├── hooks/          # Custom React hooks
+│   └── lib/            # Utility functions and configurations
+├── .env                # Environment variables (create from .env.example)
+└── ...                 # Configuration files
+```
+
+## Key Features
+
+- **Dashboard**: Central hub showing active commitments, past commitments, and validation requests
+- **Commitment Creation**: Form-based interface for creating new commitments
+- **Validation Interface**: Tools for validators to review and confirm commitment completion
+- **Commitment Details**: Detailed view of individual commitments with status updates
+- **Wallet Integration**: Seamless connection with MetaMask and other wallets
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ and npm
+- MetaMask or compatible wallet with Linea Sepolia testnet configured
+
+### Installation
+
+1. Clone the repository and navigate to the frontend directory:
+
+```bash
+git clone https://github.com/yourusername/metawill.git
+cd metawill/frontend
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create a `.env.local` file based on `.env.example` and add your configuration:
+
+```
+NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_api_key
+NEXT_PUBLIC_WALLET_CONNECT_ID=your_wallet_connect_id
+```
+
+4. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Endpoints
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The frontend includes several API endpoints to interact with the blockchain:
 
-## Learn More
+- `/api/read-contract`: Read data from smart contracts
+- `/api/commitment-details`: Get detailed information about specific commitments
+- `/api/write-contract`: Write data to smart contracts (create commitments, report completion, etc.)
 
-To learn more about Next.js, take a look at the following resources:
+## Build for Production
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+npm run start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Testing
 
-## Deploy on Vercel
+```bash
+npm run test
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License.
