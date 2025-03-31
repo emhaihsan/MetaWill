@@ -24,7 +24,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
 
 import { toast } from "sonner";
 import { useAccount, useWriteContract } from "wagmi";
@@ -376,32 +375,6 @@ export default function CommitmentDetailPage({
                   )}
                 </div>
               </div>
-
-              {Number(commitment.status) === CommitmentStatus.Active && (
-                <div className="mt-8">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Progress Timeline
-                  </p>
-                  <Progress
-                    value={Math.min(
-                      100,
-                      ((Date.now() / 1000 - commitment.deadline) /
-                        (commitment.deadline - Date.now() / 1000)) *
-                        100
-                    )}
-                    className="h-2"
-                  />
-                  <Separator className="my-4" />
-                  <div className="flex justify-between mt-1">
-                    <span className="text-xs text-muted-foreground">
-                      Created
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      Deadline: {formatDate(commitment.deadline)}
-                    </span>
-                  </div>
-                </div>
-              )}
             </CardContent>
             <CardFooter className="flex justify-between border-t pt-6">
               {Number(commitment.status) === CommitmentStatus.Active ? (
