@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import {
   ArrowUpLeft,
@@ -25,18 +25,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 import { toast } from "sonner";
 import { useAccount, useWriteContract } from "wagmi";
 
@@ -71,8 +60,9 @@ interface CommitmentDetails {
 export default function CommitmentDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = use(params);
   const { address } = useAccount();
   const [commitment, setCommitment] = useState<CommitmentDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -98,16 +88,14 @@ export default function CommitmentDetailPage({
         setLoading(true);
 
         // Fetch commitment details from API
-        const response = await fetch(
-          `/api/commitment-details?address=${params.id}`
-        );
+        const response = await fetch(`/api/commitment-details?address=${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch commitment details");
         }
 
         const data = await response.json();
         setCommitment({
-          address: params.id,
+          address: id,
           ...data.commitment,
         });
 
@@ -145,7 +133,7 @@ export default function CommitmentDetailPage({
     };
 
     fetchCommitmentDetails();
-  }, [params.id, address]);
+  }, [id, address]);
 
   const getStatusBadge = (status: number) => {
     switch (status) {
@@ -195,7 +183,7 @@ export default function CommitmentDetailPage({
 
     try {
       await reportCompletionAsync({
-        address: params.id as `0x${string}`,
+        address: id as `0x${string}`,
         abi: MetaWillCommitmentABI,
         functionName: "reportCompletion",
         args: [success],
@@ -219,7 +207,7 @@ export default function CommitmentDetailPage({
 
     try {
       await validateCompletionAsync({
-        address: params.id as `0x${string}`,
+        address: id as `0x${string}`,
         abi: MetaWillCommitmentABI,
         functionName: "validateCompletion",
         args: [success],
