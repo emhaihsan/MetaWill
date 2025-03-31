@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Calendar,
@@ -31,11 +31,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { useMetaWill } from "@/components/providers";
+import { useDonationAddresses } from "@/hooks/useMetaWillContract";
+import { parseEther } from "viem";
+import { toast } from "@/components/ui/toast";
 
 export default function NewCommitmentPage() {
   const [date, setDate] = useState<Date>();
@@ -45,12 +56,29 @@ export default function NewCommitmentPage() {
     description: "",
     amount: "",
     validator: "",
+    donationIndex: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Mengambil data MetaWill dari provider
+  const { createNewCommitment, isCreatingCommitment, refreshUserCommitments } =
+    useMetaWill();
+
+  // Mengambil daftar donasi
+  const {
+    donationAddresses,
+    donationNames,
+    isLoading: isLoadingDonations,
+  } = useDonationAddresses();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -62,16 +90,45 @@ export default function NewCommitmentPage() {
     setStep(step - 1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here would be the logic to submit the commitment to the blockchain
-    // For now, we'll just simulate a successful submission
-    setStep(3);
-  };
+    setIsSubmitting(true);
 
-  // Calculate gas fee (this would be dynamic in a real app)
-  const gasFee = "0.002 ETH";
-  const totalCost = Number.parseFloat(formData.amount || "0") + 0.002;
+    try {
+      // Konversi deadline ke timestamp (dalam detik)
+      const deadline = date ? Math.floor(date.getTime() / 1000) : 0;
+
+      // Konversi amount ke BigInt (dalam wei)
+      const stakeAmount = parseEther(formData.amount);
+
+      // Panggil fungsi createNewCommitment dari provider
+      await createNewCommitment(
+        formData.title,
+        formData.description,
+        deadline,
+        formData.validator as `0x${string}`,
+        Number(formData.donationIndex),
+        stakeAmount
+      );
+
+      // Refresh daftar komitmen user
+      await refreshUserCommitments();
+
+      // Pindah ke step 3 (konfirmasi)
+      setStep(3);
+
+      toast.success("Your commitment has been successfully created!", {
+        description: "You can view it in your dashboard",
+      });
+    } catch (error) {
+      console.error("Error creating commitment:", error);
+      toast.error("Failed to create commitment", {
+        description: "Please try again later",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50">
@@ -221,20 +278,16 @@ export default function NewCommitmentPage() {
                         className="w-full justify-start text-left font-normal border-primary/20 focus-visible:ring-primary"
                       >
                         <Calendar className="mr-2 h-4 w-4" />
-                        {date ? (
-                          format(date, "PPP")
-                        ) : (
-                          <span>Select a date</span>
-                        )}
+                        {date ? format(date, "PPP") : "Select a date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0">
                       <CalendarComponent
                         mode="single"
                         selected={date}
                         onSelect={setDate}
-                        initialFocus
                         disabled={(date) => date < new Date()}
+                        initialFocus
                       />
                     </PopoverContent>
                   </Popover>
@@ -256,6 +309,37 @@ export default function NewCommitmentPage() {
                   </p>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="donationIndex">Donation Recipient</Label>
+                  <Select
+                    value={formData.donationIndex}
+                    onValueChange={(value) =>
+                      handleSelectChange("donationIndex", value)
+                    }
+                  >
+                    <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
+                      <SelectValue placeholder="Select a donation recipient" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {isLoadingDonations ? (
+                        <SelectItem value="loading" disabled>
+                          Loading...
+                        </SelectItem>
+                      ) : (
+                        donationNames.map((name, index) => (
+                          <SelectItem key={index} value={index.toString()}>
+                            {name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    If you fail to complete your commitment, your stake will be
+                    donated to this recipient
+                  </p>
+                </div>
+
                 <Alert className="bg-amber-500/10 text-amber-500 border-amber-500/20">
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>Important</AlertTitle>
@@ -274,7 +358,8 @@ export default function NewCommitmentPage() {
                     !formData.description ||
                     !formData.amount ||
                     !date ||
-                    !formData.validator
+                    !formData.validator ||
+                    !formData.donationIndex
                   }
                 >
                   Continue to Review
@@ -330,6 +415,17 @@ export default function NewCommitmentPage() {
                     </h3>
                     <p className="text-base">{formData.validator}</p>
                   </div>
+
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground">
+                      Donation Recipient
+                    </h3>
+                    <p className="text-base">
+                      {formData.donationIndex !== "" && !isLoadingDonations
+                        ? donationNames[parseInt(formData.donationIndex)]
+                        : "Not selected"}
+                    </p>
+                  </div>
                 </div>
 
                 <Separator className="my-4" />
@@ -339,27 +435,24 @@ export default function NewCommitmentPage() {
                     <span className="text-muted-foreground">Stake Amount:</span>
                     <span>{formData.amount} ETH</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      Estimated Gas Fee:
-                    </span>
-                    <span>{gasFee}</span>
-                  </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between font-bold">
                     <span>Total:</span>
-                    <span>{totalCost.toFixed(3)} ETH</span>
+                    <span>{formData.amount} ETH</span>
                   </div>
                 </div>
 
-                <Alert className="bg-primary/10 text-primary border-primary/20">
+                <Alert className="bg-blue-500/10 text-blue-500 border-blue-500/20">
                   <Info className="h-4 w-4" />
-                  <AlertTitle>How it works</AlertTitle>
+                  <AlertTitle>Note</AlertTitle>
                   <AlertDescription>
-                    When you confirm, your stake will be locked in a smart
-                    contract until your commitment is validated. If successful,
-                    you'll receive your stake back. If not, it will be donated
-                    to charity.
+                    By confirming, you agree to stake {formData.amount} ETH as
+                    collateral for your commitment. This amount will be returned
+                    to you upon successful completion, or donated to{" "}
+                    {formData.donationIndex !== "" && !isLoadingDonations
+                      ? donationNames[parseInt(formData.donationIndex)]
+                      : "the selected charity"}{" "}
+                    if you fail to complete it.
                   </AlertDescription>
                 </Alert>
               </CardContent>
@@ -367,8 +460,13 @@ export default function NewCommitmentPage() {
                 <Button variant="outline" onClick={handlePrevStep}>
                   Back
                 </Button>
-                <Button onClick={handleSubmit}>
-                  Confirm & Sign Transaction
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || isCreatingCommitment}
+                >
+                  {isSubmitting || isCreatingCommitment
+                    ? "Creating..."
+                    : "Create Commitment"}
                 </Button>
               </CardFooter>
             </Card>
@@ -377,71 +475,58 @@ export default function NewCommitmentPage() {
           {/* Step 3: Confirmation */}
           {step === 3 && (
             <Card className="border border-primary/10 bg-background/50 backdrop-blur-sm">
-              <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mb-4">
-                  <CheckCircle className="h-6 w-6 text-green-500" />
-                </div>
-                <CardTitle>Commitment Created!</CardTitle>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                  Commitment Created!
+                </CardTitle>
                 <CardDescription>
-                  Your commitment has been successfully created and your stake
-                  has been locked
+                  Your commitment has been successfully created and is now
+                  active
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="rounded-lg border border-primary/10 bg-primary/5 p-4">
-                  <h3 className="font-medium mb-2">{formData.title}</h3>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-muted-foreground">
-                      Stake Amount:
-                    </span>
-                    <Badge
-                      variant="outline"
-                      className="border-primary/20 text-primary"
-                    >
-                      {formData.amount} ETH
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">
-                      Deadline:
-                    </span>
-                    <span className="text-sm">
-                      {date ? format(date, "PPP") : "No date selected"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Transaction Details</h3>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      Transaction Hash:
-                    </span>
-                    <Link
-                      href="#"
-                      className="text-primary hover:underline truncate max-w-[200px]"
-                    >
-                      0x71C7656EC7ab88b098defB751B7401B5f6d8976F
-                    </Link>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Block Number:</span>
-                    <span>12345678</span>
-                  </div>
-                </div>
-
-                <Alert className="bg-primary/10 text-primary border-primary/20">
-                  <Info className="h-4 w-4" />
-                  <AlertTitle>Next Steps</AlertTitle>
+                <Alert className="bg-green-500/10 text-green-500 border-green-500/20">
+                  <CheckCircle className="h-4 w-4" />
+                  <AlertTitle>Success</AlertTitle>
                   <AlertDescription>
-                    Your validator has been notified about this commitment.
-                    Focus on completing your commitment before the deadline!
+                    Your commitment has been recorded on the blockchain. You can
+                    now track your progress and report completion when ready.
                   </AlertDescription>
                 </Alert>
+
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <h3 className="font-medium mb-2">Commitment Summary</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Title:</span>
+                      <span className="font-medium">{formData.title}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Deadline:</span>
+                      <span className="font-medium">
+                        {date ? format(date, "PPP") : "No date selected"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Stake:</span>
+                      <span className="font-medium">{formData.amount} ETH</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Status:</span>
+                      <Badge
+                        variant="outline"
+                        className="bg-amber-500/10 text-amber-500 border-amber-500/20"
+                      >
+                        Active
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
               <CardFooter className="border-t border-primary/10 bg-muted/30 flex justify-center">
                 <Button asChild>
-                  <Link href="/dashboard">Return to Dashboard</Link>
+                  <Link href="/dashboard">Go to Dashboard</Link>
                 </Button>
               </CardFooter>
             </Card>

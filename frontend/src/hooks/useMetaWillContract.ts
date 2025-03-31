@@ -10,17 +10,18 @@ export function useMetaWillFactory() {
   const { writeContract, isPending: isCreating } = useWriteContract();
 
   const createNewCommitment = async (
-    validator: Address,
     title: string,
     description: string,
     deadline: number,
+    validator: Address,
+    donationAddressIndex: number,
     stakeAmount: bigint
   ) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.FACTORY,
       abi: MetaWillFactoryABI,
       functionName: 'createCommitment',
-      args: [validator, title, description, deadline, stakeAmount],
+      args: [title, description, deadline, validator, donationAddressIndex],
       value: stakeAmount,
     });
   };
@@ -28,6 +29,29 @@ export function useMetaWillFactory() {
   return {
     createNewCommitment,
     isCreating,
+  };
+}
+
+// Hook untuk mendapatkan daftar donasi
+export function useDonationAddresses() {
+  // Definisikan tipe data yang diharapkan dari getDonationAddresses
+  type DonationAddressesResult = [Address[], string[]];
+
+  const { data, isLoading, error, refetch } = useReadContract({
+    address: CONTRACT_ADDRESSES.FACTORY,
+    abi: MetaWillFactoryABI,
+    functionName: 'getDonationAddresses',
+  });
+
+  // Pastikan data memiliki tipe yang benar
+  const typedData = data as DonationAddressesResult | undefined;
+
+  return {
+    donationAddresses: typedData ? typedData[0] : [],
+    donationNames: typedData ? typedData[1] : [],
+    isLoading,
+    error,
+    refetch,
   };
 }
 

@@ -23,10 +23,11 @@ type MetaWillContextType = {
   refreshUserCommitments: () => Promise<void>;
   refreshValidatorCommitments: () => Promise<void>;
   createNewCommitment: (
-    validator: Address,
     title: string,
     description: string,
     deadline: number,
+    validator: Address,
+    donationAddressIndex: number,
     stakeAmount: bigint
   ) => Promise<void>;
   isCreatingCommitment: boolean;
