@@ -34,22 +34,22 @@ export default function StatsCard() {
 
       for (const commitmentAddress of userCommitments) {
         try {
-          // Gunakan wagmi untuk mendapatkan detail komitmen
+          // Gunakan API untuk mendapatkan detail komitmen yang terbaru
           const result = await fetch(
-            `/api/commitment-details?address=${commitmentAddress}`
+            `/api/commitment-details?address=${commitmentAddress}&timestamp=${Date.now()}`
           );
           const data = await result.json();
 
-          if (data) {
+          if (data && data.commitment) {
             // Tambahkan stake amount ke total
-            totalStakedAmount += BigInt(data.stakeAmount || 0);
+            totalStakedAmount += BigInt(data.commitment.stakeAmount || 0);
 
             // Hitung success rate
-            if (data.status === 1) {
+            if (Number(data.commitment.status) === 1) {
               // CompletedSuccess
               successCount++;
               completedCount++;
-            } else if (data.status === 2) {
+            } else if (Number(data.commitment.status) === 2) {
               // CompletedFailure
               completedCount++;
             }

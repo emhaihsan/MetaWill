@@ -76,9 +76,6 @@ export default function CommitmentDetailPage({
   const { address } = useAccount();
   const [commitment, setCommitment] = useState<CommitmentDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [validationOpen, setValidationOpen] = useState(false);
-  const [proofText, setProofText] = useState("");
   const [timeLeft, setTimeLeft] = useState("");
   const [isCreator, setIsCreator] = useState(false);
   const [isValidator, setIsValidator] = useState(false);
@@ -209,8 +206,6 @@ export default function CommitmentDetailPage({
           success ? "completed" : "failed"
         }.`,
       });
-
-      setConfirmationOpen(false);
     } catch (error) {
       console.error("Error reporting completion:", error);
       toast.error("Error", {
@@ -235,8 +230,6 @@ export default function CommitmentDetailPage({
           success ? "completed" : "failed"
         }.`,
       });
-
-      setValidationOpen(false);
     } catch (error) {
       console.error("Error validating completion:", error);
       toast.error("Error", {
@@ -287,15 +280,15 @@ export default function CommitmentDetailPage({
       <Elements />
       <Navbar />
 
-      <main className="flex-1 px-8 py-8">
-        <div className="max-w-4xl mx-auto">
+      <main className="flex-1 container py-8">
+        <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-bold">Commitment Details</h1>
             <Button variant="outline" className="gap-2" asChild>
-              <Link href="/dashboard/all-commitments">
-                <ArrowUpLeft className="h-4 w-4" /> Back to All Commitments
+              <Link href="/dashboard">
+                <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
               </Link>
             </Button>
-            <h1 className="text-2xl font-bold">Commitment Details</h1>
           </div>
 
           <Card className="mb-8">
@@ -439,111 +432,44 @@ export default function CommitmentDetailPage({
 
                   {/* Creator actions */}
                   {isCreator && !commitment.creatorReportedSuccess && (
-                    <Dialog
-                      open={confirmationOpen}
-                      onOpenChange={setConfirmationOpen}
-                    >
-                      <DialogTrigger asChild>
-                        <Button className="bg-[#F6851B] hover:bg-[#F6851B]/90 text-white">
-                          Report Completion
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Report Commitment Status</DialogTitle>
-                          <DialogDescription>
-                            Report whether you've completed your commitment or
-                            not. This will be verified by your validator.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium">
-                              Proof of Completion
-                            </p>
-                            <Textarea
-                              placeholder="Describe how you fulfilled your commitment and provide any relevant links or evidence..."
-                              value={proofText}
-                              onChange={(e) => setProofText(e.target.value)}
-                              className="min-h-[150px]"
-                            />
-                            <p className="text-xs text-muted-foreground">
-                              Note: This proof is only for your validator's
-                              reference and is not stored on the blockchain.
-                            </p>
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button
-                            variant="outline"
-                            onClick={() => setConfirmationOpen(false)}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                            onClick={() => handleReportCompletion(true)}
-                            disabled={isReportingCompletion}
-                          >
-                            Report Success
-                          </Button>
-                          <Button
-                            className="bg-red-600 hover:bg-red-700 text-white"
-                            onClick={() => handleReportCompletion(false)}
-                            disabled={isReportingCompletion}
-                          >
-                            Report Failure
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                    <div className="flex gap-2">
+                      <Button
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        onClick={() => handleReportCompletion(true)}
+                        disabled={isReportingCompletion}
+                      >
+                        Confirm Success
+                      </Button>
+                      <Button
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                        onClick={() => handleReportCompletion(false)}
+                        disabled={isReportingCompletion}
+                      >
+                        Confirm Failure
+                      </Button>
+                    </div>
                   )}
 
                   {/* Validator actions */}
                   {isValidator &&
                     commitment.creatorReportedSuccess &&
                     !commitment.validatorConfirmed && (
-                      <Dialog
-                        open={validationOpen}
-                        onOpenChange={setValidationOpen}
-                      >
-                        <DialogTrigger asChild>
-                          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                            Validate Commitment
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Validate Commitment</DialogTitle>
-                            <DialogDescription>
-                              Confirm whether the creator has successfully
-                              completed their commitment.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <DialogFooter>
-                            <Button
-                              variant="outline"
-                              onClick={() => setValidationOpen(false)}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              className="bg-green-600 hover:bg-green-700 text-white"
-                              onClick={() => handleValidateCompletion(true)}
-                              disabled={isValidatingCompletion}
-                            >
-                              Confirm Success
-                            </Button>
-                            <Button
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => handleValidateCompletion(false)}
-                              disabled={isValidatingCompletion}
-                            >
-                              Report Failure
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                      <div className="flex gap-2">
+                        <Button
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          onClick={() => handleValidateCompletion(true)}
+                          disabled={isValidatingCompletion}
+                        >
+                          Confirm Success
+                        </Button>
+                        <Button
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                          onClick={() => handleValidateCompletion(false)}
+                          disabled={isValidatingCompletion}
+                        >
+                          Report Failure
+                        </Button>
+                      </div>
                     )}
 
                   {/* Status messages */}
