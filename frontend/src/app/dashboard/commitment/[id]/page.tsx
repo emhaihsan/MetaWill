@@ -23,7 +23,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 import { toast } from "sonner";
 import { useAccount, useWriteContract } from "wagmi";
@@ -34,7 +33,6 @@ import Footer from "@/components/footer";
 import { MetaWillCommitmentABI } from "@/abi/MetaWillCommitment";
 import { formatEther } from "viem";
 
-// Status enum dari kontrak
 enum CommitmentStatus {
   Active,
   CompletedSuccess,

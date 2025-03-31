@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http, parseAbi } from "viem";
 import { lineaTestnet } from "viem/chains";
 import { MetaWillCommitmentABI } from "../../../abi/MetaWillCommitment";
+import MetaWillFactoryABI from "../../../abi/MetaWillFactory.json";
+import MetaWillDonationABI from "../../../abi/MetaWillDonation.json";
 
 // Buat client untuk berinteraksi dengan blockchain
 const publicClient = createPublicClient({
@@ -30,12 +32,40 @@ function convertBigIntToString(value: any): any {
   return value;
 }
 
+// Fungsi untuk memilih ABI yang sesuai berdasarkan fungsi yang dipanggil
+function getAbiForFunction(functionName: string): any {
+  // Fungsi-fungsi yang ada di MetaWillFactoryABI
+  const factoryFunctions = [
+    "getTotalCommitments",
+    "getUserCommitments",
+    "getValidatorCommitments",
+    "allCommitments",
+    "createCommitment"
+  ];
+
+  // Fungsi-fungsi yang ada di MetaWillDonationABI
+  const donationFunctions = [
+    "getTotalDonations",
+    "donate"
+  ];
+
+  if (factoryFunctions.includes(functionName)) {
+    return MetaWillFactoryABI;
+  } else if (donationFunctions.includes(functionName)) {
+    return MetaWillDonationABI;
+  } else {
+    // Default ke MetaWillCommitmentABI untuk fungsi-fungsi lainnya
+    return MetaWillCommitmentABI;
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     // Ambil parameter dari query
     const searchParams = request.nextUrl.searchParams;
     const address = searchParams.get("address");
     const functionName = searchParams.get("functionName");
+    const argsStr = searchParams.get("args");
 
     if (!address || !functionName) {
       return NextResponse.json(
@@ -44,11 +74,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Parse args jika ada
+    let args: any[] = [];
+    if (argsStr) {
+      try {
+        // Coba parse sebagai JSON array
+        if (argsStr.startsWith('[') && argsStr.endsWith(']')) {
+          args = JSON.parse(argsStr);
+        } else {
+          // Jika bukan JSON array, anggap sebagai single value
+          args = [argsStr];
+        }
+      } catch (e) {
+        // Jika gagal parse sebagai JSON, gunakan sebagai string biasa
+        args = [argsStr];
+      }
+    }
+
+    // Pilih ABI yang sesuai berdasarkan fungsi yang dipanggil
+    const abi = getAbiForFunction(functionName);
+
     // Panggil fungsi kontrak
     const result = await publicClient.readContract({
       address: address as `0x${string}`,
-      abi: MetaWillCommitmentABI,
+      abi: abi,
       functionName: functionName,
+      args: args.length > 0 ? args : undefined,
     });
 
     // Konversi BigInt menjadi string sebelum mengembalikan sebagai JSON
