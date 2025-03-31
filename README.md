@@ -108,6 +108,14 @@ forge test
 - **Commitment Details**: View detailed information about each commitment
 - **Reporting**: Report completion status for commitments
 
-## License
+## Contract
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+https://sepolia.lineascan.build/
+
+MetaWill Factory deployed at: 0x4A83D7f2E360F159925E9FD9feC9175dbDB2fcbD
+
+Donation Option 1 deployed at: 0x3803d8099e9f78E05f0444e53f927083BE33375F
+
+Donation Option 2 deployed at: 0xd427cc15dE0b1a1094cfC7FD88D5ED35e7e78555
+
+Donation Option 3 deployed at: 0xD92f9783a08dd409cC7E93FA7fE7a4a0C821dD23
