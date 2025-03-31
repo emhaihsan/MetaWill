@@ -285,6 +285,11 @@ export default function ValidationRequestsPage() {
                 Review and validate commitment completions
               </p>
             </div>
+            <Button variant="outline" className="gap-2" asChild>
+              <Link href="/dashboard">
+                <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
+              </Link>
+            </Button>
           </div>
 
           <div className="flex flex-col md:flex-row gap-4 mb-8">
