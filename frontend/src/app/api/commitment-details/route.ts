@@ -2,8 +2,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http } from "viem";
 import { lineaSepolia } from "viem/chains";
-import MetaWillCommitmentABI from "@/abi/MetaWillCommitment.json";
+import { MetaWillCommitmentABI } from "../../../abi/MetaWillCommitment";
 
+// Fungsi untuk mengkonversi BigInt menjadi string
+function convertBigIntToString(value: any): any {
+  if (typeof value === "bigint") {
+    return value.toString();
+  }
+  
+  if (Array.isArray(value)) {
+    return value.map(convertBigIntToString);
+  }
+  
+  if (typeof value === "object" && value !== null) {
+    const result: Record<string, any> = {};
+    for (const key in value) {
+      result[key] = convertBigIntToString(value[key]);
+    }
+    return result;
+  }
+  
+  return value;
+}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -39,18 +59,23 @@ export async function GET(request: NextRequest) {
       validatorReportedSuccess
     ] = commitmentDetails as any;
 
-    return NextResponse.json({
+    const commitment = {
       creator,
       validator,
       title,
       description,
-      deadline: Number(deadline),
-      stakeAmount: stakeAmount.toString(),
-      status: Number(status),
+      deadline,
+      stakeAmount,
+      status,
       creatorReportedSuccess,
       validatorConfirmed,
       validatorReportedSuccess
-    });
+    };
+
+    // Konversi BigInt menjadi string
+    const serializedCommitment = convertBigIntToString(commitment);
+
+    return NextResponse.json({ commitment: serializedCommitment });
   } catch (error) {
     console.error("Error fetching commitment details:", error);
     return NextResponse.json({ error: "Failed to fetch commitment details" }, { status: 500 });
