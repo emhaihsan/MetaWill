@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
       address: address as `0x${string}`,
       abi: abi,
       functionName: functionName,
-      args: args.length > 0 ? args : undefined,
+      args: args,
     });
 
     // Konversi BigInt menjadi string sebelum mengembalikan sebagai JSON
