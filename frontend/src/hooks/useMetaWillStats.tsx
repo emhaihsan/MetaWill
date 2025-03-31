@@ -11,14 +11,6 @@ import { useAccount } from "wagmi";
 export function useMetaWillStats() {
   const { address } = useAccount();
 
-  // Mendapatkan total komitmen dari factory
-  const { data: totalCommitments, isLoading: isLoadingTotalCommitments } =
-    useReadContract({
-      address: CONTRACT_ADDRESSES.FACTORY,
-      abi: MetaWillFactoryABI,
-      functionName: "getTotalCommitments",
-    });
-
   // Mendapatkan komitmen user
   const { data: userCommitments, isLoading: isLoadingUserCommitments } =
     useReadContract({
@@ -30,6 +22,20 @@ export function useMetaWillStats() {
         enabled: !!address,
       },
     });
+
+  // Mendapatkan komitmen yang perlu divalidasi oleh user
+  const {
+    data: validatorCommitments,
+    isLoading: isLoadingValidatorCommitments,
+  } = useReadContract({
+    address: CONTRACT_ADDRESSES.FACTORY,
+    abi: MetaWillFactoryABI,
+    functionName: "getValidatorCommitments",
+    args: [address],
+    query: {
+      enabled: !!address,
+    },
+  });
 
   // Mendapatkan total donasi dari ketiga kontrak donasi
   const { data: totalDonation1, isLoading: isLoadingDonation1 } =
@@ -59,17 +65,18 @@ export function useMetaWillStats() {
     (totalDonation2 ? BigInt(totalDonation2.toString()) : BigInt(0)) +
     (totalDonation3 ? BigInt(totalDonation3.toString()) : BigInt(0));
 
-  // Mendapatkan total stake dari user commitments (perlu query setiap komitmen)
-  // Ini akan diimplementasikan di komponen statscard
-
   return {
-    totalCommitments: totalCommitments ? Number(totalCommitments) : 0,
     userCommitments: (userCommitments as `0x${string}`[]) || [],
+    userCommitmentsCount: userCommitments ? (userCommitments as any).length : 0,
+    validatorCommitments: (validatorCommitments as `0x${string}`[]) || [],
+    validatorCommitmentsCount: validatorCommitments
+      ? (validatorCommitments as any).length
+      : 0,
     totalDonated,
     totalDonatedFormatted: formatEther(totalDonated),
     isLoading:
-      isLoadingTotalCommitments ||
       isLoadingUserCommitments ||
+      isLoadingValidatorCommitments ||
       isLoadingDonation1 ||
       isLoadingDonation2 ||
       isLoadingDonation3,

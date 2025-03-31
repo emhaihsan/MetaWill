@@ -3,14 +3,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMetaWillStats } from "@/hooks/useMetaWillStats";
-import { useMetaWillCommitment } from "@/hooks/useMetaWillContract";
 import { formatEther } from "viem";
 import { useEffect, useState } from "react";
 
 export default function StatsCard() {
   const {
-    totalCommitments,
     userCommitments,
+    userCommitmentsCount,
+    validatorCommitments,
+    validatorCommitmentsCount,
     totalDonatedFormatted,
     isLoading,
   } = useMetaWillStats();
@@ -82,14 +83,14 @@ export default function StatsCard() {
   // Data untuk statscard
   const stats = [
     {
-      name: "Total Commitment",
-      value: isLoading ? "Loading..." : totalCommitments.toString(),
+      name: "Total User Commitment",
+      value: isLoading ? "Loading..." : userCommitmentsCount.toString(),
       change: "",
       changeType: "neutral",
     },
     {
-      name: "Total Staked",
-      value: isLoadingDetails ? "Loading..." : `${totalStaked} ETH`,
+      name: "Total Validation",
+      value: isLoading ? "Loading..." : validatorCommitmentsCount.toString(),
       change: "",
       changeType: "neutral",
     },
