@@ -6,31 +6,17 @@ import { Address } from 'viem';
 
 // Hook untuk membaca data dari kontrak factory
 export function useMetaWillFactory() {
-  // Fungsi untuk mendapatkan semua komitmen user
-  const getUserCommitments = useReadContract({
-    address: CONTRACT_ADDRESSES.FACTORY,
-    abi: MetaWillFactoryABI,
-    functionName: 'getUserCommitments',
-  });
-
-  // Fungsi untuk mendapatkan komitmen yang divalidasi user
-  const getValidatorCommitments = useReadContract({
-    address: CONTRACT_ADDRESSES.FACTORY,
-    abi: MetaWillFactoryABI,
-    functionName: 'getValidatorCommitments',
-  });
-
   // Fungsi untuk membuat komitmen baru
-  const { writeContract: createCommitment, isPending: isCreating } = useWriteContract();
+  const { writeContract, isPending: isCreating } = useWriteContract();
 
-  const createNewCommitment = (
+  const createNewCommitment = async (
     validator: Address,
     title: string,
     description: string,
     deadline: number,
     stakeAmount: bigint
   ) => {
-    return createCommitment({
+    return writeContract({
       address: CONTRACT_ADDRESSES.FACTORY,
       abi: MetaWillFactoryABI,
       functionName: 'createCommitment',
@@ -40,26 +26,69 @@ export function useMetaWillFactory() {
   };
 
   return {
-    getUserCommitments,
-    getValidatorCommitments,
     createNewCommitment,
     isCreating,
   };
 }
 
+// Hook untuk mendapatkan komitmen user
+export function useUserCommitments(userAddress?: Address) {
+  const { data, isLoading, error, refetch } = useReadContract({
+    address: CONTRACT_ADDRESSES.FACTORY,
+    abi: MetaWillFactoryABI,
+    functionName: 'getUserCommitments',
+    args: userAddress ? [userAddress] : undefined,
+    query: {
+      enabled: !!userAddress,
+    },
+  });
+
+  return {
+    commitments: data as Address[] | undefined,
+    isLoading,
+    error,
+    refetch,
+  };
+}
+
+// Hook untuk mendapatkan komitmen validator
+export function useValidatorCommitments(validatorAddress?: Address) {
+  const { data, isLoading, error, refetch } = useReadContract({
+    address: CONTRACT_ADDRESSES.FACTORY,
+    abi: MetaWillFactoryABI,
+    functionName: 'getValidatorCommitments',
+    args: validatorAddress ? [validatorAddress] : undefined,
+    query: {
+      enabled: !!validatorAddress,
+    },
+  });
+
+  return {
+    commitments: data as Address[] | undefined,
+    isLoading,
+    error,
+    refetch,
+  };
+}
+
 // Hook untuk interaksi dengan kontrak commitment
-export function useMetaWillCommitment(commitmentAddress: Address) {
+export function useMetaWillCommitment(commitmentAddress?: Address) {
   // Fungsi untuk mendapatkan detail komitmen
-  const getCommitmentDetails = useReadContract({
+  const { data, isLoading, error, refetch } = useReadContract({
     address: commitmentAddress,
     abi: MetaWillCommitmentABI,
     functionName: 'getCommitmentDetails',
+    query: {
+      enabled: !!commitmentAddress,
+    },
   });
 
   // Fungsi untuk melaporkan keberhasilan oleh creator
   const { writeContract: reportSuccess, isPending: isReporting } = useWriteContract();
 
-  const reportCommitmentSuccess = () => {
+  const reportCommitmentSuccess = async () => {
+    if (!commitmentAddress) return;
+    
     return reportSuccess({
       address: commitmentAddress,
       abi: MetaWillCommitmentABI,
@@ -70,7 +99,9 @@ export function useMetaWillCommitment(commitmentAddress: Address) {
   // Fungsi untuk validator mengkonfirmasi keberhasilan
   const { writeContract: validateCompletion, isPending: isValidating } = useWriteContract();
 
-  const validateCommitmentCompletion = (isSuccessful: boolean) => {
+  const validateCommitmentCompletion = async (isSuccessful: boolean) => {
+    if (!commitmentAddress) return;
+    
     return validateCompletion({
       address: commitmentAddress,
       abi: MetaWillCommitmentABI,
@@ -80,7 +111,10 @@ export function useMetaWillCommitment(commitmentAddress: Address) {
   };
 
   return {
-    getCommitmentDetails,
+    commitmentDetails: data,
+    isLoading,
+    error,
+    refetch,
     reportCommitmentSuccess,
     validateCommitmentCompletion,
     isReporting,
