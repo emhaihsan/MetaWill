@@ -71,6 +71,13 @@ export default function NewCommitmentPage() {
     isLoading: isLoadingDonations,
   } = useDonationAddresses();
 
+  const isNextStepDisabled =
+    !formData.title ||
+    !formData.amount ||
+    !date ||
+    !formData.validator ||
+    !formData.donationIndex;
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -131,240 +138,165 @@ export default function NewCommitmentPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50">
+    <div className="flex min-h-screen flex-col bg-black bg-[radial-gradient(ellipse_at_top,rgba(246,133,27,0.15)_0%,transparent_60%)] text-gray-100">
       {/* Decorative elements */}
       <Elements />
 
       <Navbar />
 
-      <main className="flex-1 container py-8">
+      <main className="flex-1 container px-4 pb-8 pt-28">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold">Create New Commitment</h1>
-            <Button variant="outline" className="gap-2" asChild>
+            <h1 className="text-3xl font-bold text-white tracking-tight">
+              Create New Commitment
+            </h1>
+            <Button
+              variant="outline"
+              className="gap-2 border-orange-500/60 text-orange-400 hover:bg-orange-500/10 hover:text-orange-200"
+              asChild
+            >
               <Link href="/dashboard">
                 <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
               </Link>
             </Button>
           </div>
 
-          {/* Step indicator */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div
-                className={`flex items-center ${
-                  step >= 1 ? "text-primary" : "text-muted-foreground"
-                }`}
-              >
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                    step >= 1
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-muted-foreground"
-                  }`}
-                >
-                  1
-                </div>
-                <span className="ml-2 font-medium">Details</span>
-              </div>
-              <div
-                className={`flex-1 h-px mx-4 ${
-                  step >= 2 ? "bg-primary" : "bg-muted-foreground/30"
-                }`}
-              ></div>
-              <div
-                className={`flex items-center ${
-                  step >= 2 ? "text-primary" : "text-muted-foreground"
-                }`}
-              >
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                    step >= 2
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-muted-foreground"
-                  }`}
-                >
-                  2
-                </div>
-                <span className="ml-2 font-medium">Review</span>
-              </div>
-              <div
-                className={`flex-1 h-px mx-4 ${
-                  step >= 3 ? "bg-primary" : "bg-muted-foreground/30"
-                }`}
-              ></div>
-              <div
-                className={`flex items-center ${
-                  step >= 3 ? "text-primary" : "text-muted-foreground"
-                }`}
-              >
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                    step >= 3
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-muted-foreground"
-                  }`}
-                >
-                  3
-                </div>
-                <span className="ml-2 font-medium">Confirmation</span>
-              </div>
-            </div>
-          </div>
-
           {/* Step 1: Commitment Details */}
           {step === 1 && (
-            <Card className="border border-primary/10 bg-background/50 backdrop-blur-sm">
+            <Card className="bg-black/30 backdrop-blur-lg border border-white/10">
               <CardHeader>
-                <CardTitle>Commitment Details</CardTitle>
-                <CardDescription>
-                  Define your commitment and set the terms for accountability
+                <CardTitle className="text-white">Define Your Goal</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Tell us what you want to achieve. Be specific!
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Commitment Title</Label>
+                  <Label htmlFor="title" className="text-gray-300">
+                    Commitment Title
+                  </Label>
                   <Input
                     id="title"
                     name="title"
-                    placeholder="E.g., Complete 30 days of coding"
+                    placeholder='e.g., "Run a 5k Marathon" or "Finish my project"'
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="border-primary/20 focus-visible:ring-primary"
+                    className="bg-gray-900/50 border-white/20 focus:border-orange-500 text-white"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-gray-300">
+                    Description
+                  </Label>
                   <Textarea
                     id="description"
                     name="description"
-                    placeholder="Describe what you're committing to do in detail"
+                    placeholder="Describe the details of your commitment..."
                     value={formData.description}
                     onChange={handleInputChange}
-                    className="min-h-[100px] border-primary/20 focus-visible:ring-primary"
+                    className="bg-gray-900/50 border-white/20 focus:border-orange-500 text-white"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="amount">Stake Amount (USDC)</Label>
-                  <div className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="amount" className="text-gray-300">
+                      Stake Amount (USDC)
+                    </Label>
                     <Input
                       id="amount"
                       name="amount"
                       type="number"
-                      step="0.01"
-                      min="0.01"
-                      placeholder="0.5"
+                      placeholder="e.g., 50"
                       value={formData.amount}
                       onChange={handleInputChange}
-                      className="border-primary/20 focus-visible:ring-primary"
+                      className="bg-gray-900/50 border-white/20 focus:border-orange-500 text-white"
                     />
-                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                      <span className="text-sm text-muted-foreground">
-                        USDC
-                      </span>
-                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    This amount will be staked as collateral for your commitment
-                  </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="date" className="text-gray-300">
+                      Deadline
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={`w-full justify-start text-left font-normal text-gray-400 hover:text-white bg-gray-900/50 border-white/20 hover:bg-gray-900/80`}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {date ? (
+                            format(date, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-gray-900 border-white/20 text-white">
+                        <CalendarComponent
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          disabled={(date) =>
+                            date < new Date(new Date().setHours(0, 0, 0, 0))
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Deadline</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal border-primary/20 focus-visible:ring-primary"
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : "Select a date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <CalendarComponent
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="validator">Validator Address</Label>
+                  <Label htmlFor="validator" className="text-gray-300">
+                    Validator Address
+                  </Label>
                   <Input
                     id="validator"
                     name="validator"
-                    placeholder="0x..."
+                    placeholder="Enter the wallet address of your validator (e.g., 0x...)"
                     value={formData.validator}
                     onChange={handleInputChange}
-                    className="border-primary/20 focus-visible:ring-primary"
+                    className="bg-gray-900/50 border-white/20 focus:border-orange-500 text-white"
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Enter the Ethereum address of the person who will verify
-                    your commitment
-                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="donationIndex">Donation Recipient</Label>
+                  <Label htmlFor="donationIndex" className="text-gray-300">
+                    Charity for Donation (if you fail)
+                  </Label>
                   <Select
-                    value={formData.donationIndex}
                     onValueChange={(value) =>
                       handleSelectChange("donationIndex", value)
                     }
+                    defaultValue={formData.donationIndex}
                   >
-                    <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
-                      <SelectValue placeholder="Select a donation recipient" />
+                    <SelectTrigger className="w-full bg-gray-900/50 border-white/20 focus:border-orange-500 text-white">
+                      <SelectValue placeholder="Select a charity" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-gray-900 border-white/20 text-white">
                       {isLoadingDonations ? (
                         <SelectItem value="loading" disabled>
-                          Loading...
+                          Loading charities...
                         </SelectItem>
                       ) : (
-                        donationNames.map((name, index) => (
-                          <SelectItem key={index} value={index.toString()}>
-                            {name}
+                        donationAddresses.map((address, index) => (
+                          <SelectItem key={address} value={index.toString()}>
+                            {donationNames[index]}
                           </SelectItem>
                         ))
                       )}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">
-                    If you fail to complete your commitment, your stake will be
-                    donated to this recipient
-                  </p>
                 </div>
-
-                <Alert className="bg-amber-500/10 text-amber-500 border-amber-500/20">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Important</AlertTitle>
-                  <AlertDescription>
-                    Make sure your validator is someone you trust who can verify
-                    your commitment completion. They will need to confirm your
-                    success or failure.
-                  </AlertDescription>
-                </Alert>
               </CardContent>
-              <CardFooter className="border-t border-primary/10 bg-muted/30 flex justify-end">
+              <CardFooter className="border-t border-white/10 pt-6 flex justify-end">
                 <Button
                   onClick={handleNextStep}
-                  disabled={
-                    !formData.title ||
-                    !formData.description ||
-                    !formData.amount ||
-                    !date ||
-                    !formData.validator ||
-                    !formData.donationIndex
-                  }
+                  disabled={isNextStepDisabled}
+                  className="group flex gap-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-black font-bold shadow-[0_0_15px_rgba(246,133,27,0.3)] hover:shadow-[0_0_25px_rgba(246,133,27,0.5)] transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:scale-100"
                 >
-                  Continue to Review
+                  Next Step
                 </Button>
               </CardFooter>
             </Card>
@@ -372,85 +304,65 @@ export default function NewCommitmentPage() {
 
           {/* Step 2: Review Commitment */}
           {step === 2 && (
-            <Card className="border border-primary/10 bg-background/50 backdrop-blur-sm">
+            <Card className="bg-black/30 backdrop-blur-lg border border-white/10">
               <CardHeader>
-                <CardTitle>Review Your Commitment</CardTitle>
-                <CardDescription>
-                  Please review your commitment details before confirming
+                <CardTitle className="text-white">
+                  Review Your Commitment
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Please double-check the details before creating it on the
+                  blockchain.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Commitment Title
-                    </h3>
-                    <p className="text-base">{formData.title}</p>
+              <CardContent className="space-y-4">
+                <div className="p-6 rounded-2xl bg-black/20 space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Title:</span>
+                    <span className="font-medium text-white text-right">
+                      {formData.title}
+                    </span>
                   </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Description
-                    </h3>
-                    <p className="text-base">{formData.description}</p>
+                  <Separator className="bg-white/10" />
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Stake:</span>
+                    <span className="font-mono font-bold text-lg text-orange-400">
+                      {formData.amount} USDC
+                    </span>
                   </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Stake Amount
-                    </h3>
-                    <p className="text-base">{formData.amount} USDC</p>
+                  <Separator className="bg-white/10" />
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Deadline:</span>
+                    <span className="font-medium text-white">
+                      {date ? format(date, "PPP") : "N/A"}
+                    </span>
                   </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Deadline
-                    </h3>
-                    <p className="text-base">
-                      {date ? format(date, "PPP") : "No date selected"}
-                    </p>
+                  <Separator className="bg-white/10" />
+                  <div className="flex justify-between items-start">
+                    <span className="text-gray-400 mt-1">Validator:</span>
+                    <span className="font-mono text-white text-right break-all">
+                      {formData.validator}
+                    </span>
                   </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Validator
-                    </h3>
-                    <p className="text-base">{formData.validator}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Donation Recipient
-                    </h3>
-                    <p className="text-base">
+                  <Separator className="bg-white/10" />
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">
+                      Donation upon failure:
+                    </span>
+                    <span className="font-medium text-white">
                       {formData.donationIndex !== "" && !isLoadingDonations
                         ? donationNames[parseInt(formData.donationIndex)]
-                        : "Not selected"}
-                    </p>
+                        : "N/A"}
+                    </span>
                   </div>
                 </div>
 
-                <Separator className="my-4" />
-
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Stake Amount:</span>
-                    <span className="font-medium">{formData.amount} USDC</span>
-                  </div>
-                  <Separator className="my-2" />
-                  <div className="flex justify-between font-bold">
-                    <span>Total:</span>
-                    <span className="font-medium">{formData.amount} USDC</span>
-                  </div>
-                </div>
-
-                <Alert className="bg-blue-500/10 text-blue-500 border-blue-500/20">
-                  <Info className="h-4 w-4" />
-                  <AlertTitle>Note</AlertTitle>
+                <Alert className="bg-amber-500/10 border-amber-500/20 text-amber-400">
+                  <Info className="h-4 w-4 !text-amber-400" />
+                  <AlertTitle>Heads up!</AlertTitle>
                   <AlertDescription>
-                    By confirming, you agree to stake {formData.amount} USDC as
-                    collateral for your commitment. This amount will be returned
-                    to you upon successful completion, or donated to{" "}
+                    The staked amount is the collateral for your commitment.
+                    This amount will be returned to you upon successful
+                    completion, or donated to{" "}
                     {formData.donationIndex !== "" && !isLoadingDonations
                       ? donationNames[parseInt(formData.donationIndex)]
                       : "the selected charity"}{" "}
@@ -458,13 +370,18 @@ export default function NewCommitmentPage() {
                   </AlertDescription>
                 </Alert>
               </CardContent>
-              <CardFooter className="border-t border-primary/10 bg-muted/30 flex justify-between">
-                <Button variant="outline" onClick={handlePrevStep}>
+              <CardFooter className="border-t border-white/10 pt-6 flex justify-between">
+                <Button
+                  variant="outline"
+                  onClick={handlePrevStep}
+                  className="border-white/20 hover:bg-white/10 hover:text-white"
+                >
                   Back
                 </Button>
                 <Button
                   onClick={handleSubmit}
                   disabled={isSubmitting || isCreatingCommitment}
+                  className="group flex gap-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-black font-bold shadow-[0_0_15px_rgba(246,133,27,0.3)] hover:shadow-[0_0_25px_rgba(246,133,27,0.5)] transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:scale-100"
                 >
                   {isSubmitting || isCreatingCommitment
                     ? "Creating..."
@@ -476,20 +393,20 @@ export default function NewCommitmentPage() {
 
           {/* Step 3: Confirmation */}
           {step === 3 && (
-            <Card className="border border-primary/10 bg-background/50 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+            <Card className="bg-black/30 backdrop-blur-lg border border-white/10">
+              <CardHeader className="text-center items-center">
+                <CheckCircle className="h-12 w-12 text-green-400 mb-2" />
+                <CardTitle className="text-2xl text-white">
                   Commitment Created!
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-gray-400">
                   Your commitment has been successfully created and is now
-                  active
+                  active.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <Alert className="bg-green-500/10 text-green-500 border-green-500/20">
-                  <CheckCircle className="h-4 w-4" />
+                <Alert className="bg-green-500/10 border-green-500/20 text-green-400">
+                  <CheckCircle className="h-4 w-4 !text-green-400" />
                   <AlertTitle>Success</AlertTitle>
                   <AlertDescription>
                     Your commitment has been recorded on the blockchain. You can
@@ -497,39 +414,43 @@ export default function NewCommitmentPage() {
                   </AlertDescription>
                 </Alert>
 
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <h3 className="font-medium mb-2">Commitment Summary</h3>
+                <div className="p-4 rounded-lg bg-black/20">
+                  <h3 className="font-medium mb-3 text-white">
+                    Commitment Summary
+                  </h3>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Title:</span>
-                      <span className="font-medium">{formData.title}</span>
+                      <span className="text-gray-400">Title:</span>
+                      <span className="font-medium text-white">
+                        {formData.title}
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Deadline:</span>
-                      <span className="font-medium">
+                      <span className="text-gray-400">Deadline:</span>
+                      <span className="font-medium text-white">
                         {date ? format(date, "PPP") : "No date selected"}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Stake:</span>
-                      <span className="font-medium">
+                      <span className="text-gray-400">Stake:</span>
+                      <span className="font-medium text-white">
                         {formData.amount} USDC
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Status:</span>
-                      <Badge
-                        variant="outline"
-                        className="bg-amber-500/10 text-amber-500 border-amber-500/20"
-                      >
+                      <span className="text-gray-400">Status:</span>
+                      <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/20">
                         Active
                       </Badge>
                     </div>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="border-t border-primary/10 bg-muted/30 flex justify-center">
-                <Button asChild>
+              <CardFooter className="border-t border-white/10 pt-6 flex justify-center">
+                <Button
+                  asChild
+                  className="group flex gap-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-black font-bold shadow-[0_0_15px_rgba(246,133,27,0.3)] hover:shadow-[0_0_25px_rgba(246,133,27,0.5)] transition-all duration-300 transform hover:scale-105"
+                >
                   <Link href="/dashboard">Go to Dashboard</Link>
                 </Button>
               </CardFooter>
