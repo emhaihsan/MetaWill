@@ -36,7 +36,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useAccount } from "wagmi";
 import { contractConfig } from "@/lib/contract-config";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 import { useChainId } from "wagmi";
 
 // Enum untuk status komitmen
@@ -121,7 +121,7 @@ export default function AllCommitmentsPage() {
                 title: commitmentData.title,
                 description: commitmentData.description,
                 staked:
-                  formatEther(BigInt(commitmentData.stakeAmount)) + " ETH",
+                  formatUnits(BigInt(commitmentData.stakeAmount), 6) + " USDC",
                 deadline: Number(commitmentData.deadline),
                 validator: commitmentData.validator,
                 status: Number(commitmentData.status),

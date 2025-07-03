@@ -52,7 +52,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useAccount } from "wagmi";
 import { contractConfig } from "@/lib/contract-config";
-import { formatEther } from "viem";
+import { formatUnits } from "viem";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useChainId } from "wagmi";
 
@@ -166,7 +166,7 @@ export default function ValidationRequestsPage() {
                 title: commitmentData.title,
                 description: commitmentData.description,
                 staked:
-                  formatEther(BigInt(commitmentData.stakeAmount)) + " ETH",
+                  formatUnits(BigInt(commitmentData.stakeAmount), 6) + " USDC",
                 deadline: Number(commitmentData.deadline),
                 status: Number(commitmentData.status),
                 createdAt: Date.now() / 1000 - 86400, // Perkiraan, karena tidak ada data createdAt

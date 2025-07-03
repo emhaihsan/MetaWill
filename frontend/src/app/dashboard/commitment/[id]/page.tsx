@@ -31,7 +31,7 @@ import Elements from "@/components/elements";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { MetaWillCommitmentABI } from "@/abi/MetaWillCommitment";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 
 enum CommitmentStatus {
   Active,
@@ -298,7 +298,7 @@ export default function CommitmentDetailPage({
                         Staked Amount
                       </p>
                       <p className="font-medium">
-                        {formatEther(BigInt(commitment.stakeAmount))} ETH
+                        {formatUnits(BigInt(commitment.stakeAmount), 6)} USDC
                       </p>
                     </div>
                   </div>
@@ -379,7 +379,7 @@ export default function CommitmentDetailPage({
                 <>
                   <Button variant="outline" asChild>
                     <Link
-                      href={`https://explorer.sepolia.linea.build/address/${commitment.address}`}
+                      href={`https://sepolia.basescan.org/address/${commitment.address}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2"
@@ -446,7 +446,7 @@ export default function CommitmentDetailPage({
                 <>
                   <Button variant="outline" asChild>
                     <Link
-                      href={`https://explorer.sepolia.linea.build/address/${commitment.address}`}
+                      href={`https://sepolia.basescan.org/address/${commitment.address}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2"
@@ -464,7 +464,7 @@ export default function CommitmentDetailPage({
                 <>
                   <Button variant="outline" asChild>
                     <Link
-                      href={`https://explorer.sepolia.linea.build/address/${commitment.address}`}
+                      href={`https://sepolia.basescan.org/address/${commitment.address}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2"

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useMetaWillStats } from "./useMetaWillStats";
-import { formatEther } from "viem";
+import { formatUnits } from "viem";
 
 // Tipe data untuk komitmen
 export type Commitment = {
@@ -161,7 +161,7 @@ export function useCommitments() {
         address: commitmentAddress,
         title: String(titleResult),
         description: String(descriptionResult),
-        staked: `${formatEther(BigInt(String(stakeAmountResult)))} ETH`,
+        staked: `${formatUnits(BigInt(String(stakeAmountResult)), 6)} USDC`,
         deadline: new Date(Number(deadlineResult) * 1000).toLocaleDateString(),
         validator: `${String(validatorResult).slice(0, 6)}...${String(
           validatorResult
