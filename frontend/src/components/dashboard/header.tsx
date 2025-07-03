@@ -12,12 +12,20 @@ export default function Header() {
         </p>
       </div>
       <div className="flex flex-col gap-2 sm:flex-row">
-        <Button variant="outline" className="gap-2" asChild>
+        <Button
+          variant="secondary"
+          className="gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white font-semibold shadow-[0_0_12px_rgba(124,58,237,0.25)] hover:shadow-[0_0_20px_rgba(124,58,237,0.40)] transition-all duration-300 transform hover:scale-105"
+          asChild
+        >
           <Link href="/dashboard/all-commitments">
             <Calendar className="h-4 w-4" /> View All Commitments
           </Link>
         </Button>
-        <Button variant="outline" className="gap-2" asChild>
+        <Button
+          variant="secondary"
+          className="gap-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white font-semibold shadow-[0_0_12px_rgba(16,185,129,0.25)] hover:shadow-[0_0_20px_rgba(16,185,129,0.40)] transition-all duration-300 transform hover:scale-105"
+          asChild
+        >
           <Link href="/dashboard/validation-requests">
             <CheckCircle className="h-4 w-4" /> View All Validation Requests
           </Link>

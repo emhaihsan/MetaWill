@@ -31,7 +31,7 @@ const faqData = [
   {
     question: "What can I use as a stake?",
     answer:
-      "You must use USDC (a stablecoin) as your stake. The amount is set by you, but should be meaningful enough to motivate you to complete your commitment.",
+      "We use USDC as the stake. The amount is set by you, but should be meaningful enough to motivate you to complete your commitment.",
   },
   {
     question: "Can I be a validator for someone else?",

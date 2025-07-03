@@ -31,7 +31,8 @@ import Elements from "@/components/elements";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { MetaWillCommitmentABI } from "@/abi/MetaWillCommitment";
-import { formatEther, formatUnits } from "viem";
+import { formatUnits } from "viem";
+import { Skeleton } from "@/components/ui/skeleton";
 
 enum CommitmentStatus {
   Active,
@@ -136,37 +137,25 @@ export default function CommitmentDetailPage({
     switch (status) {
       case CommitmentStatus.Active:
         return (
-          <Badge
-            variant="outline"
-            className="bg-blue-50 text-blue-700 border-blue-200"
-          >
+          <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/20">
             Active
           </Badge>
         );
       case CommitmentStatus.CompletedSuccess:
         return (
-          <Badge
-            variant="outline"
-            className="bg-green-50 text-green-700 border-green-200"
-          >
-            Completed Successfully
+          <Badge className="bg-green-500/10 text-green-400 border-green-500/20">
+            Success
           </Badge>
         );
       case CommitmentStatus.CompletedFailure:
         return (
-          <Badge
-            variant="outline"
-            className="bg-red-50 text-red-700 border-red-200"
-          >
+          <Badge className="bg-red-500/10 text-red-400 border-red-500/20">
             Failed
           </Badge>
         );
       case CommitmentStatus.Disputed:
         return (
-          <Badge
-            variant="outline"
-            className="bg-yellow-50 text-yellow-700 border-yellow-200"
-          >
+          <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20">
             Disputed
           </Badge>
         );
@@ -176,8 +165,6 @@ export default function CommitmentDetailPage({
   };
 
   const handleReportCompletion = async (success: boolean) => {
-    if (!commitment) return;
-
     try {
       await reportCompletionAsync({
         address: id as `0x${string}`,
@@ -200,8 +187,6 @@ export default function CommitmentDetailPage({
   };
 
   const handleValidateCompletion = async (success: boolean) => {
-    if (!commitment) return;
-
     try {
       await validateCompletionAsync({
         address: id as `0x${string}`,
@@ -223,32 +208,50 @@ export default function CommitmentDetailPage({
     }
   };
 
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp * 1000).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <p>Loading commitment details...</p>
-      </div>
-    );
-  }
-
-  if (!commitment) {
-    return (
-      <div className="flex min-h-screen flex-col">
+      <div className="flex min-h-screen flex-col bg-black bg-[radial-gradient(ellipse_at_top,rgba(246,133,27,0.15)_0%,transparent_60%)] text-gray-100">
+        <Elements />
         <Navbar />
-        <main className="flex-1 px-8 py-8">
-          <div className="flex flex-col items-center justify-center h-full">
-            <AlertCircle className="h-16 w-16 text-muted-foreground mb-4" />
-            <h1 className="text-2xl font-bold mb-2">Commitment Not Found</h1>
-            <p className="text-muted-foreground mb-6">
-              The commitment you're looking for doesn't exist or has been
-              removed.
-            </p>
-            <Button asChild>
-              <Link href="/dashboard">
-                <ArrowUpLeft className="mr-2 h-4 w-4" />
-                Return to Dashboard
-              </Link>
-            </Button>
+        <main className="flex-1 container px-4 pb-8 pt-28">
+          <div className="max-w-4xl mx-auto">
+            <Skeleton className="h-8 w-1/4 mb-2" />
+            <Skeleton className="h-6 w-1/2 mb-8" />
+            <Card className="bg-black/30 backdrop-blur-lg border border-white/10">
+              <CardHeader>
+                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-4 w-full mt-2" />
+              </CardHeader>
+              <CardContent className="grid md:grid-cols-2 gap-8 pt-6">
+                <div className="space-y-4">
+                  <Skeleton className="h-6 w-1/3" />
+                  <Skeleton className="h-6 w-2/3" />
+                </div>
+                <div className="space-y-4">
+                  <Skeleton className="h-6 w-1/3" />
+                  <Skeleton className="h-6 w-2/3" />
+                </div>
+                <div className="space-y-4">
+                  <Skeleton className="h-6 w-1/3" />
+                  <Skeleton className="h-6 w-2/3" />
+                </div>
+                <div className="space-y-4">
+                  <Skeleton className="h-6 w-1/3" />
+                  <Skeleton className="h-6 w-2/3" />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Skeleton className="h-10 w-32" />
+              </CardFooter>
+            </Card>
           </div>
         </main>
         <Footer />
@@ -256,136 +259,100 @@ export default function CommitmentDetailPage({
     );
   }
 
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleDateString();
-  };
+  if (!commitment) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-black text-white">
+        <p>Commitment not found.</p>
+        <Link
+          href="/dashboard"
+          className="mt-4 text-orange-400 hover:underline"
+        >
+          Back to Dashboard
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50">
+    <div className="flex min-h-screen flex-col bg-black bg-[radial-gradient(ellipse_at_top,rgba(246,133,27,0.15)_0%,transparent_60%)] text-gray-100">
       <Elements />
       <Navbar />
 
-      <main className="flex-1 container py-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold">Commitment Details</h1>
-            <Button variant="outline" className="gap-2" asChild>
-              <Link href="/dashboard">
-                <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
-              </Link>
-            </Button>
+      <main className="flex-1 container px-4 pb-8 pt-28">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-3xl font-bold text-white tracking-tight truncate">
+                {commitment.title}
+              </h1>
+              <p className="text-gray-400 mt-2 max-w-2xl truncate">
+                {commitment.description}
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              <Button
+                variant="outline"
+                className="gap-2 border-white/20 text-gray-900 hover:bg-white/10 hover:text-white"
+                asChild
+              >
+                <Link href="/dashboard">
+                  <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
+                </Link>
+              </Button>
+            </div>
           </div>
 
-          <Card className="mb-8">
+          <Card className="bg-black/30 backdrop-blur-lg border border-white/10">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-2xl">{commitment.title}</CardTitle>
-                  <CardDescription className="mt-2">
-                    {commitment.description}
-                  </CardDescription>
-                </div>
-                <div>{getStatusBadge(Number(commitment.status))}</div>
-              </div>
+              <CardTitle className="text-white">Commitment Details</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Wallet className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Staked Amount
-                      </p>
-                      <p className="font-medium">
-                        {formatUnits(BigInt(commitment.stakeAmount), 6)} USDC
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Deadline</p>
-                      <p className="font-medium">
-                        {formatDate(commitment.deadline)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <User className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Validator</p>
-                      <p className="font-medium">{`${commitment.validator.substring(
-                        0,
-                        6
-                      )}...${commitment.validator.substring(38)}`}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <User className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Creator</p>
-                      <p className="font-medium">{`${commitment.creator.substring(
-                        0,
-                        6
-                      )}...${commitment.creator.substring(38)}`}</p>
-                    </div>
-                  </div>
-                  {Number(commitment.status) === CommitmentStatus.Active && (
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-5 w-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          Time Remaining
-                        </p>
-                        <p className="font-medium">{timeLeft}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Status indicators */}
-                  {commitment.creatorReportedSuccess && (
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <div>
-                        <p className="text-sm font-medium text-green-500">
-                          Creator reported success
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {commitment.validatorConfirmed && (
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-blue-500" />
-                      <div>
-                        <p className="text-sm font-medium text-blue-500">
-                          Validator{" "}
-                          {commitment.validatorReportedSuccess
-                            ? "confirmed success"
-                            : "reported failure"}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+            <CardContent className="grid md:grid-cols-2 gap-x-8 gap-y-6 pt-2">
+              <div className="flex items-center justify-between border-b border-white/10 py-3">
+                <span className="text-gray-400">Status</span>
+                {getStatusBadge(commitment.status)}
+              </div>
+              <div className="flex items-center justify-between border-b border-white/10 py-3">
+                <span className="text-gray-400">Time Left</span>
+                <span className="font-medium text-white">{timeLeft}</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-white/10 py-3">
+                <span className="text-gray-400">Stake Amount</span>
+                <span className="font-mono font-bold text-lg text-orange-400">
+                  {formatUnits(BigInt(commitment.stakeAmount), 6)} USDC
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-b border-white/10 py-3">
+                <span className="text-gray-400">Deadline</span>
+                <span className="font-medium text-white">
+                  {formatDate(commitment.deadline)}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1 border-b border-white/10 py-3 md:col-span-2">
+                <span className="text-gray-400">Creator</span>
+                <span className="font-mono text-sm text-white break-all">
+                  {commitment.creator}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1 border-b border-white/10 py-3 md:col-span-2">
+                <span className="text-gray-400">Validator</span>
+                <span className="font-mono text-sm text-white break-all">
+                  {commitment.validator}
+                </span>
               </div>
             </CardContent>
-            <CardFooter className="flex justify-between border-t pt-6">
+            <CardFooter className="border-t border-white/10 pt-6 flex flex-wrap items-center justify-between gap-4">
               {Number(commitment.status) === CommitmentStatus.Active ? (
                 <>
-                  <Button variant="outline" asChild>
+                  <Button
+                    variant="outline"
+                    className="border-white/20 hover:bg-white/10 hover:text-white gap-2"
+                    asChild
+                  >
                     <Link
                       href={`https://sepolia.basescan.org/address/${commitment.address}`}
                       target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2"
                     >
-                      <ExternalLink className="h-4 w-4" />
-                      View on Explorer
+                      <ExternalLink className="h-4 w-4" /> View on Explorer
                     </Link>
                   </Button>
 
@@ -393,18 +360,18 @@ export default function CommitmentDetailPage({
                   {isCreator && !commitment.creatorReportedSuccess && (
                     <div className="flex gap-2">
                       <Button
-                        className="bg-green-600 hover:bg-green-700 text-white"
                         onClick={() => handleReportCompletion(true)}
                         disabled={isReportingCompletion}
+                        className="group flex gap-2 bg-gradient-to-r from-green-500 to-emerald-400 text-black font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:scale-100"
                       >
                         Confirm Success
                       </Button>
                       <Button
-                        className="bg-red-600 hover:bg-red-700 text-white"
                         onClick={() => handleReportCompletion(false)}
                         disabled={isReportingCompletion}
+                        className="group flex gap-2 bg-gradient-to-r from-red-500 to-rose-500 text-white font-bold shadow-[0_0_15px_rgba(225,29,72,0.3)] hover:shadow-[0_0_25px_rgba(225,29,72,0.5)] transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:scale-100"
                       >
-                        Confirm Failure
+                        Report Failure
                       </Button>
                     </div>
                   )}
@@ -415,16 +382,16 @@ export default function CommitmentDetailPage({
                     !commitment.validatorConfirmed && (
                       <div className="flex gap-2">
                         <Button
-                          className="bg-green-600 hover:bg-green-700 text-white"
                           onClick={() => handleValidateCompletion(true)}
                           disabled={isValidatingCompletion}
+                          className="group flex gap-2 bg-gradient-to-r from-green-500 to-emerald-400 text-black font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:scale-100"
                         >
                           Confirm Success
                         </Button>
                         <Button
-                          className="bg-red-600 hover:bg-red-700 text-white"
                           onClick={() => handleValidateCompletion(false)}
                           disabled={isValidatingCompletion}
+                          className="group flex gap-2 bg-gradient-to-r from-red-500 to-rose-500 text-white font-bold shadow-[0_0_15px_rgba(225,29,72,0.3)] hover:shadow-[0_0_25px_rgba(225,29,72,0.5)] transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:scale-100"
                         >
                           Report Failure
                         </Button>
@@ -435,49 +402,51 @@ export default function CommitmentDetailPage({
                   {isCreator &&
                     commitment.creatorReportedSuccess &&
                     !commitment.validatorConfirmed && (
-                      <div className="flex items-center gap-2 text-yellow-600">
+                      <div className="flex items-center gap-2 text-yellow-400">
                         <Clock className="h-5 w-5" />
-                        <span>Waiting for validator confirmation</span>
+                        <span>Waiting for validator confirmation...</span>
                       </div>
                     )}
                 </>
               ) : Number(commitment.status) ===
                 CommitmentStatus.CompletedSuccess ? (
-                <>
-                  <Button variant="outline" asChild>
-                    <Link
-                      href={`https://sepolia.basescan.org/address/${commitment.address}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      View on Explorer
-                    </Link>
-                  </Button>
-                  <div className="flex items-center gap-2 text-green-600">
+                <div className="w-full flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-green-400">
                     <CheckCircle className="h-5 w-5" />
                     <span>Successfully Completed</span>
                   </div>
-                </>
-              ) : (
-                <>
-                  <Button variant="outline" asChild>
+                  <Button
+                    variant="outline"
+                    className="border-white/20 hover:bg-white/10 hover:text-white gap-2"
+                    asChild
+                  >
                     <Link
                       href={`https://sepolia.basescan.org/address/${commitment.address}`}
                       target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2"
                     >
-                      <ExternalLink className="h-4 w-4" />
-                      View on Explorer
+                      <ExternalLink className="h-4 w-4" /> View on Explorer
                     </Link>
                   </Button>
-                  <div className="flex items-center gap-2 text-red-600">
+                </div>
+              ) : (
+                <div className="w-full flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-red-400">
                     <XCircle className="h-5 w-5" />
                     <span>Commitment Failed</span>
                   </div>
-                </>
+                  <Button
+                    variant="outline"
+                    className="border-white/20 hover:bg-white/10 hover:text-white gap-2"
+                    asChild
+                  >
+                    <Link
+                      href={`https://sepolia.basescan.org/address/${commitment.address}`}
+                      target="_blank"
+                    >
+                      <ExternalLink className="h-4 w-4" /> View on Explorer
+                    </Link>
+                  </Button>
+                </div>
               )}
             </CardFooter>
           </Card>
