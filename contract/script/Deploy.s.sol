@@ -29,7 +29,7 @@ contract DeployScript is Script {
         initialDonationNames[2] = "Animal Welfare Society";
 
         // Deploy factory
-        uint256 minStake = 1 * 1e6; // 1 USDC
+        uint256 minStake = 5 * 1e5; // 0.5 USDC
         uint256 maxStake = 1000 * 1e6; // 1000 USDC
         MetaWillFactory factory =
             new MetaWillFactory(usdcAddress, initialDonationAddresses, initialDonationNames, minStake, maxStake);
