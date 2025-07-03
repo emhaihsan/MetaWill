@@ -5,7 +5,7 @@ import { useReadContract, useChainId } from "wagmi";
 import { contractConfig } from "@/lib/contract-config";
 import MetaWillFactoryABI from "@/abi/MetaWillFactory.json";
 import MetaWillDonationABI from "@/abi/MetaWillDonation.json";
-import { formatEther } from "viem";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 export function useMetaWillStats() {
@@ -39,37 +39,43 @@ export function useMetaWillStats() {
     },
   });
 
-  // Mendapatkan total donasi dari ketiga kontrak donasi
+  // Mendapatkan total donasi dari user yang sedang login
   const { data: totalDonation1, isLoading: isLoadingDonation1 } =
     useReadContract({
       address: config?.donation.address1,
       abi: MetaWillDonationABI,
-      functionName: "getTotalDonations",
-      query: { enabled: !!config },
+      functionName: "getDonorContribution",
+      args: [address],
+      query: { enabled: !!address && !!config },
     });
 
   const { data: totalDonation2, isLoading: isLoadingDonation2 } =
     useReadContract({
       address: config?.donation.address2,
       abi: MetaWillDonationABI,
-      functionName: "getTotalDonations",
-      query: { enabled: !!config },
+      functionName: "getDonorContribution",
+      args: [address],
+      query: { enabled: !!address && !!config },
     });
 
   const { data: totalDonation3, isLoading: isLoadingDonation3 } =
     useReadContract({
       address: config?.donation.address3,
       abi: MetaWillDonationABI,
-      functionName: "getTotalDonations",
-      query: { enabled: !!config },
+      functionName: "getDonorContribution",
+      args: [address],
+      query: { enabled: !!address && !!config },
     });
 
   const totalDonations =
-    totalDonation1 && totalDonation2 && totalDonation3
-      ? formatEther(
+    totalDonation1 !== undefined &&
+    totalDonation2 !== undefined &&
+    totalDonation3 !== undefined
+      ? formatUnits(
           (totalDonation1 as bigint) +
             (totalDonation2 as bigint) +
-            (totalDonation3 as bigint)
+            (totalDonation3 as bigint),
+          6
         )
       : "0";
 
