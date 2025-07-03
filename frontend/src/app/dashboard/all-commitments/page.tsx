@@ -9,6 +9,7 @@ import {
   ArrowUpLeft,
   ArrowUpRight,
   History,
+  Wallet,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useAccount } from "wagmi";
 import { contractConfig } from "@/lib/contract-config";
-import { formatEther, formatUnits } from "viem";
+import { formatUnits } from "viem";
 import { useChainId } from "wagmi";
 
 // Enum untuk status komitmen
@@ -65,7 +66,7 @@ interface Commitment {
 export default function AllCommitmentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("deadline");
-  const [activeTab, setActiveTab] = useState("active");
+  const [activeTab, setActiveTab] = useState("all");
   const [commitments, setCommitments] = useState<Commitment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const chainId = useChainId();
@@ -150,31 +151,30 @@ export default function AllCommitmentsPage() {
     };
 
     fetchAllCommitments();
-  }, []);
+  }, [chainId]);
 
-  // Check for URL parameters to set the active tab
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tabParam = params.get("tab");
-    if (tabParam && ["active", "past", "all"].includes(tabParam)) {
-      setActiveTab(tabParam);
-    }
-  }, []);
-
-  // Filter komitmen berdasarkan search query dan status
-  const filteredCommitments = commitments.filter(
-    (commitment) =>
-      commitment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      commitment.description.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter komitmen untuk hanya menampilkan milik pengguna yang login
+  const myCommitments = commitments.filter(
+    (c) => c.creator.toLowerCase() === address?.toLowerCase()
   );
 
+  // Kemudian, filter berdasarkan query pencarian dari komitmen milik pengguna
+  const filteredCommitments = myCommitments.filter((commitment) =>
+    commitment.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Filter untuk tab: Active (hanya milik user)
   const activeCommitments = filteredCommitments.filter(
-    (commitment) => commitment.status === CommitmentStatus.Active
+    (c) => c.status === CommitmentStatus.Active
   );
 
+  // Filter untuk tab: Past (hanya milik user)
   const pastCommitments = filteredCommitments.filter(
-    (commitment) => commitment.status !== CommitmentStatus.Active
+    (c) => c.status !== CommitmentStatus.Active
   );
+
+  // Semua komitmen milik pengguna adalah daftar yang sudah difilter
+  const allUserCommitments = filteredCommitments;
 
   // Sort komitmen berdasarkan selected sort option
   const sortCommitments = (commitments: Commitment[]) => {
@@ -194,7 +194,7 @@ export default function AllCommitmentsPage() {
 
   const sortedActiveCommitments = sortCommitments(activeCommitments);
   const sortedPastCommitments = sortCommitments(pastCommitments);
-  const sortedAllCommitments = sortCommitments(filteredCommitments);
+  const sortedAllCommitments = sortCommitments(allUserCommitments);
 
   // Format tanggal dari timestamp
   const formatDate = (timestamp: number) => {
@@ -207,463 +207,231 @@ export default function AllCommitmentsPage() {
 
   // Komponen loading skeleton
   const CommitmentSkeleton = () => (
-    <Card className="border border-primary/10 bg-background/50 backdrop-blur-sm overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-1 bg-primary/30"></div>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <Skeleton className="h-6 w-48 mb-2" />
-            <Skeleton className="h-4 w-64" />
-          </div>
-          <Skeleton className="h-6 w-20" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-40" />
-          <Skeleton className="h-4 w-40" />
-        </div>
-      </CardContent>
-      <CardFooter className="border-t border-primary/10 bg-muted/30">
-        <div className="flex w-full justify-between">
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-8 w-24" />
-        </div>
-      </CardFooter>
+    <Card className="bg-black/30 backdrop-blur-lg border border-white/10 p-4 space-y-4">
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-6 w-3/5" />
+        <Skeleton className="h-5 w-1/5" />
+      </div>
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-4/5" />
+      <div className="flex justify-between items-center pt-4">
+        <Skeleton className="h-5 w-1/3" />
+        <Skeleton className="h-8 w-1/4" />
+      </div>
     </Card>
   );
 
+  const getStatusBadge = (status: CommitmentStatus) => {
+    switch (status) {
+      case CommitmentStatus.Active:
+        return (
+          <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/20">
+            Active
+          </Badge>
+        );
+      case CommitmentStatus.CompletedSuccess:
+        return (
+          <Badge className="bg-green-500/10 text-green-400 border-green-500/20">
+            Success
+          </Badge>
+        );
+      case CommitmentStatus.CompletedFailure:
+        return (
+          <Badge className="bg-red-500/10 text-red-400 border-red-500/20">
+            Failed
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
+    }
+  };
+
+  const renderCommitmentList = (commitmentsToRender: Commitment[]) => {
+    if (commitmentsToRender.length > 0) {
+      return commitmentsToRender.map((commitment) => (
+        <Card
+          key={commitment.address}
+          className="bg-black/30 backdrop-blur-lg border border-white/10 hover:border-orange-400/50 transition-colors duration-300 group"
+        >
+          <CardHeader>
+            <div className="flex justify-between items-start gap-4">
+              <CardTitle className="text-lg font-semibold text-white group-hover:text-orange-400 transition-colors duration-300">
+                {commitment.title}
+              </CardTitle>
+              {getStatusBadge(commitment.status)}
+            </div>
+            <CardDescription className="text-gray-400 pt-1 line-clamp-2">
+              {commitment.description}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center text-sm text-gray-400">
+              <Wallet className="mr-2 h-4 w-4 text-orange-400/80" />
+              Stake:{" "}
+              <span className="font-mono text-white ml-2">
+                {commitment.staked}
+              </span>
+            </div>
+            <div className="flex items-center text-sm text-gray-400">
+              <Calendar className="mr-2 h-4 w-4 text-orange-400/80" />
+              Deadline:{" "}
+              <span className="font-mono text-white ml-2">
+                {formatDate(commitment.deadline)}
+              </span>
+            </div>
+          </CardContent>
+          <CardFooter className="border-t border-white/10 pt-4">
+            <div className="flex w-full justify-end">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2 text-orange-400 hover:text-orange-300 hover:bg-orange-400/10"
+                asChild
+              >
+                <Link href={`/dashboard/commitment/${commitment.address}`}>
+                  View Details <ChevronRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      ));
+    } else {
+      return (
+        <div className="text-center py-16 col-span-full bg-black/20 rounded-lg">
+          <div className="mx-auto w-16 h-16 rounded-full bg-orange-500/10 flex items-center justify-center mb-4">
+            <History className="h-8 w-8 text-orange-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">
+            No Commitments Found
+          </h3>
+          <p className="text-gray-400 mb-6">
+            There are no commitments matching your current filters.
+          </p>
+          <Button
+            asChild
+            className="group flex gap-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-black font-bold shadow-[0_0_15px_rgba(246,133,27,0.3)] hover:shadow-[0_0_25px_rgba(246,133,27,0.5)] transition-all duration-300 transform hover:scale-105"
+          >
+            <Link href="/dashboard/new-commitment">Create New Commitment</Link>
+          </Button>
+        </div>
+      );
+    }
+  };
+
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50">
-      {/* Decorative elements */}
+    <div className="flex min-h-screen flex-col bg-black bg-[radial-gradient(ellipse_at_top,rgba(246,133,27,0.15)_0%,transparent_60%)] text-gray-100">
       <Elements />
       <Navbar />
 
-      <main className="flex-1 py-8 px-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold">All Commitments</h1>
-              <p className="text-muted-foreground mt-1">
-                Browse and manage all commitments on the platform
+      <main className="flex-1 container px-4 pb-8 pt-28">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-white tracking-tight">
+                Commitment Explorer
+              </h1>
+              <p className="text-gray-400 mt-2 max-w-2xl">
+                Browse, search, and manage all commitments on the MetaWill
+                platform.
               </p>
             </div>
-            <div className="flex flex-col md:flex-row gap-2">
-              <Button variant="outline" className="gap-2" asChild>
-                <Link href="/dashboard">
-                  <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link href="/dashboard/new-commitment">Create Commitment</Link>
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              className="gap-2 border-white/20 text-gray-900 hover:bg-white/10 hover:text-white"
+              asChild
+            >
+              <Link href="/dashboard">
+                <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
+              </Link>
+            </Button>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 mb-8">
-            <div className="flex-1">
-              <Input
-                placeholder="Search commitments..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full"
-              />
+          <Tabs
+            defaultValue="all"
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <TabsList className="grid w-full grid-cols-3 md:w-auto bg-black/30 border border-white/10 p-1">
+                <TabsTrigger
+                  value="active"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-gray-400"
+                >
+                  Active
+                </TabsTrigger>
+                <TabsTrigger
+                  value="past"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-gray-400"
+                >
+                  Past
+                </TabsTrigger>
+                <TabsTrigger
+                  value="all"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-gray-400"
+                >
+                  All
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                <Input
+                  type="search"
+                  placeholder="Search by title..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full md:w-64 bg-black/30 border-white/20 placeholder:text-gray-500 focus:border-orange-400"
+                />
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-full sm:w-[180px] bg-black/30 border-white/20 focus:border-orange-400">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black/80 backdrop-blur-lg border-white/20 text-white">
+                    <SelectItem value="deadline">Sort by Deadline</SelectItem>
+                    <SelectItem value="amount">Sort by Amount</SelectItem>
+                    <SelectItem value="created">Sort by Created</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="deadline">Sort by Deadline</SelectItem>
-                <SelectItem value="amount">Sort by Amount</SelectItem>
-                <SelectItem value="created">Sort by Created Date</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger
-                value="active"
-                className="data-[state=active]:bg-primary/10"
-              >
-                Active
-              </TabsTrigger>
-              <TabsTrigger
-                value="past"
-                className="data-[state=active]:bg-primary/10"
-              >
-                Past
-              </TabsTrigger>
-              <TabsTrigger
-                value="all"
-                className="data-[state=active]:bg-primary/10"
-              >
-                All
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Active Commitments Tab */}
-            <TabsContent value="active" className="space-y-4">
+            <TabsContent value="active">
               {isLoading ? (
-                // Tampilkan skeleton saat loading
-                Array(3)
-                  .fill(0)
-                  .map((_, index) => (
-                    <CommitmentSkeleton key={`active-skeleton-${index}`} />
-                  ))
-              ) : sortedActiveCommitments.length > 0 ? (
-                sortedActiveCommitments.map((commitment) => (
-                  <Card
-                    key={commitment.address}
-                    className="border border-primary/10 bg-background/50 backdrop-blur-sm overflow-hidden"
-                  >
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-primary"></div>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <CardTitle>{commitment.title}</CardTitle>
-                          <CardDescription className="mt-1">
-                            {commitment.description}
-                          </CardDescription>
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className="border-primary/20 text-primary"
-                        >
-                          {commitment.staked}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar className="mr-2 h-4 w-4" />
-                          Deadline: {formatDate(commitment.deadline)}
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Users className="mr-2 h-4 w-4" />
-                          Validator: {commitment.validator.slice(0, 6)}...
-                          {commitment.validator.slice(-4)}
-                        </div>
-                        {commitment.creatorReportedSuccess &&
-                          !commitment.validatorConfirmed && (
-                            <div className="flex items-center text-sm text-amber-500">
-                              <ArrowUpRight className="mr-2 h-4 w-4" />
-                              Waiting for validator confirmation
-                            </div>
-                          )}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="border-t border-primary/10 bg-muted/30">
-                      <div className="flex w-full justify-between">
-                        {commitment.creator === address && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="gap-1 text-muted-foreground hover:text-primary"
-                            asChild
-                          >
-                            <Link
-                              href={`/dashboard/commitment/${commitment.address}`}
-                            >
-                              Report Completion
-                            </Link>
-                          </Button>
-                        )}
-                        {commitment.creator !== address && (
-                          <div></div> // Placeholder untuk alignment
-                        )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-1"
-                          asChild
-                        >
-                          <Link
-                            href={`/dashboard/commitment/${commitment.address}`}
-                          >
-                            <span>View Details</span>
-                            <ArrowUpRight className="h-3 w-3" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <CommitmentSkeleton key={i} />
+                  ))}
+                </div>
               ) : (
-                <div className="text-center py-12">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <Calendar className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">
-                    No active commitments found
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
-                    You don't have any active commitments matching your search.
-                  </p>
-                  <Button asChild>
-                    <Link href="/dashboard/new-commitment">
-                      Create New Commitment
-                    </Link>
-                  </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {renderCommitmentList(sortedActiveCommitments)}
                 </div>
               )}
             </TabsContent>
-
-            {/* Past Commitments Tab */}
-            <TabsContent value="past" className="space-y-4">
+            <TabsContent value="past">
               {isLoading ? (
-                // Tampilkan skeleton saat loading
-                Array(3)
-                  .fill(0)
-                  .map((_, index) => (
-                    <CommitmentSkeleton key={`past-skeleton-${index}`} />
-                  ))
-              ) : sortedPastCommitments.length > 0 ? (
-                sortedPastCommitments.map((commitment) => (
-                  <Card
-                    key={commitment.address}
-                    className={`border border-primary/10 bg-background/50 backdrop-blur-sm overflow-hidden ${
-                      commitment.status === CommitmentStatus.CompletedSuccess
-                        ? "border-green-500/30"
-                        : "border-red-500/30"
-                    }`}
-                  >
-                    <div
-                      className={`absolute top-0 left-0 right-0 h-1 ${
-                        commitment.status === CommitmentStatus.CompletedSuccess
-                          ? "bg-green-500"
-                          : "bg-red-500"
-                      }`}
-                    ></div>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <CardTitle>{commitment.title}</CardTitle>
-                            {commitment.status ===
-                            CommitmentStatus.CompletedSuccess ? (
-                              <Badge className="bg-green-500/10 text-green-500 border-green-500/20">
-                                Completed
-                              </Badge>
-                            ) : (
-                              <Badge className="bg-red-500/10 text-red-500 border-red-500/20">
-                                Failed
-                              </Badge>
-                            )}
-                          </div>
-                          <CardDescription className="mt-1">
-                            {commitment.description}
-                          </CardDescription>
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className="border-primary/20 text-primary"
-                        >
-                          {commitment.staked}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar className="mr-2 h-4 w-4" />
-                          Deadline: {formatDate(commitment.deadline)}
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Users className="mr-2 h-4 w-4" />
-                          Validator: {commitment.validator.slice(0, 6)}...
-                          {commitment.validator.slice(-4)}
-                        </div>
-                        {commitment.status ===
-                          CommitmentStatus.CompletedFailure && (
-                          <div className="flex items-center text-sm text-red-500">
-                            <ArrowUpRight className="mr-2 h-4 w-4" />
-                            Donated to charity
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="border-t border-primary/10 bg-muted/30">
-                      <div className="flex w-full justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-1 text-primary"
-                          asChild
-                        >
-                          <Link
-                            href={`/dashboard/commitment/${commitment.address}`}
-                          >
-                            View Details <ChevronRight className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <CommitmentSkeleton key={i} />
+                  ))}
+                </div>
               ) : (
-                <div className="text-center py-12">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <History className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">
-                    No past commitments found
-                  </h3>
-                  <p className="text-muted-foreground">
-                    You don't have any past commitments matching your search.
-                  </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {renderCommitmentList(sortedPastCommitments)}
                 </div>
               )}
             </TabsContent>
-
-            {/* All Commitments Tab */}
-            <TabsContent value="all" className="space-y-4">
+            <TabsContent value="all">
               {isLoading ? (
-                // Tampilkan skeleton saat loading
-                Array(3)
-                  .fill(0)
-                  .map((_, index) => (
-                    <CommitmentSkeleton key={`all-skeleton-${index}`} />
-                  ))
-              ) : sortedAllCommitments.length > 0 ? (
-                sortedAllCommitments.map((commitment) => (
-                  <Card
-                    key={commitment.address}
-                    className={`border border-primary/10 bg-background/50 backdrop-blur-sm overflow-hidden ${
-                      commitment.status === CommitmentStatus.Active
-                        ? ""
-                        : commitment.status ===
-                          CommitmentStatus.CompletedSuccess
-                        ? "border-green-500/30"
-                        : "border-red-500/30"
-                    }`}
-                  >
-                    <div
-                      className={`absolute top-0 left-0 right-0 h-1 ${
-                        commitment.status === CommitmentStatus.Active
-                          ? "bg-primary"
-                          : commitment.status ===
-                            CommitmentStatus.CompletedSuccess
-                          ? "bg-green-500"
-                          : "bg-red-500"
-                      }`}
-                    ></div>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <CardTitle>{commitment.title}</CardTitle>
-                            {commitment.status !== CommitmentStatus.Active && (
-                              <Badge
-                                className={
-                                  commitment.status ===
-                                  CommitmentStatus.CompletedSuccess
-                                    ? "bg-green-500/10 text-green-500 border-green-500/20"
-                                    : "bg-red-500/10 text-red-500 border-red-500/20"
-                                }
-                              >
-                                {commitment.status ===
-                                CommitmentStatus.CompletedSuccess
-                                  ? "Completed"
-                                  : "Failed"}
-                              </Badge>
-                            )}
-                          </div>
-                          <CardDescription className="mt-1">
-                            {commitment.description}
-                          </CardDescription>
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className="border-primary/20 text-primary"
-                        >
-                          {commitment.staked}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar className="mr-2 h-4 w-4" />
-                          Deadline: {formatDate(commitment.deadline)}
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Users className="mr-2 h-4 w-4" />
-                          Validator: {commitment.validator.slice(0, 6)}...
-                          {commitment.validator.slice(-4)}
-                        </div>
-                        {commitment.status ===
-                          CommitmentStatus.CompletedFailure && (
-                          <div className="flex items-center text-sm text-red-500">
-                            <ArrowUpRight className="mr-2 h-4 w-4" />
-                            Donated to charity
-                          </div>
-                        )}
-                        {commitment.status === CommitmentStatus.Active &&
-                          commitment.creatorReportedSuccess &&
-                          !commitment.validatorConfirmed && (
-                            <div className="flex items-center text-sm text-amber-500">
-                              <ArrowUpRight className="mr-2 h-4 w-4" />
-                              Waiting for validator confirmation
-                            </div>
-                          )}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="border-t border-primary/10 bg-muted/30">
-                      <div className="flex w-full justify-between">
-                        {commitment.status === CommitmentStatus.Active &&
-                          commitment.creator === address && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="gap-1 text-muted-foreground hover:text-primary"
-                              asChild
-                            >
-                              <Link
-                                href={`/dashboard/commitment/${commitment.address}`}
-                              >
-                                Report Completion
-                              </Link>
-                            </Button>
-                          )}
-                        {(commitment.status !== CommitmentStatus.Active ||
-                          commitment.creator !== address) && (
-                          <div></div> // Placeholder untuk alignment
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-1 text-primary"
-                          asChild
-                        >
-                          <Link
-                            href={`/dashboard/commitment/${commitment.address}`}
-                          >
-                            View Details <ChevronRight className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <CommitmentSkeleton key={i} />
+                  ))}
+                </div>
               ) : (
-                <div className="text-center py-12">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <Calendar className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">
-                    No commitments found
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
-                    There are no commitments matching your search.
-                  </p>
-                  <Button asChild>
-                    <Link href="/dashboard/new-commitment">
-                      Create New Commitment
-                    </Link>
-                  </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {renderCommitmentList(sortedAllCommitments)}
                 </div>
               )}
             </TabsContent>
