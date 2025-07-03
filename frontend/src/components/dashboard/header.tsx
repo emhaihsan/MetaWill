@@ -23,7 +23,7 @@ export default function Header() {
           </Link>
         </Button>
         <Button
-          className="gap-2 bg-[#F6851B] hover:bg-[#F6851B]/90 text-white"
+          className="group flex gap-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-black font-bold shadow-[0_0_15px_rgba(246,133,27,0.3)] hover:shadow-[0_0_25px_rgba(246,133,27,0.5)] transition-all duration-300 transform hover:scale-105"
           asChild
         >
           <Link href="/dashboard/new-commitment">
