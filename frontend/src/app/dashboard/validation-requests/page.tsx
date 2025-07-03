@@ -51,9 +51,10 @@ import Elements from "@/components/elements";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useAccount } from "wagmi";
-import { CONTRACT_ADDRESSES } from "@/lib/contract-config";
+import { contractConfig } from "@/lib/contract-config";
 import { formatEther } from "viem";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useChainId } from "wagmi";
 
 // Enum untuk status komitmen
 enum CommitmentStatus {
@@ -85,6 +86,7 @@ export default function ValidationRequestsPage() {
   const [sortBy, setSortBy] = useState("deadline");
   const [selectedRequest, setSelectedRequest] =
     useState<ValidationRequest | null>(null);
+  const chainId = useChainId();
   const [feedbackText, setFeedbackText] = useState("");
   const [dialogAction, setDialogAction] = useState<"approve" | "reject" | null>(
     null
@@ -135,7 +137,7 @@ export default function ValidationRequestsPage() {
       try {
         // 1. Ambil komitmen yang perlu divalidasi oleh user
         const validatorResponse = await fetch(
-          `/api/read-contract?address=${CONTRACT_ADDRESSES.FACTORY}&functionName=getValidatorCommitments&args=${address}`
+          `/api/read-contract?address=${contractConfig[chainId].metaWillFactory.address}&functionName=getValidatorCommitments&args=${address}`
         );
         const validatorData = await validatorResponse.json();
 

@@ -1,7 +1,7 @@
 // /Users/emhaihsan/Documents/Github/hackathons/metawill/frontend/src/app/api/commitment-details/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http } from "viem";
-import { lineaSepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 import { MetaWillCommitmentABI } from "../../../abi/MetaWillCommitment";
 
 // Fungsi untuk mengkonversi BigInt menjadi string
@@ -35,8 +35,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const publicClient = createPublicClient({
-      chain: lineaSepolia,
-      transport: http(process.env.LINEA_RPC_URL || ""),
+      chain: baseSepolia,
+      transport: http(process.env.BASE_SEPOLIA_RPC_URL || ""),
     });
 
     const commitmentDetails = await publicClient.readContract({

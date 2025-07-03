@@ -3,17 +3,18 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMetaWillStats } from "@/hooks/useMetaWillStats";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 import { useEffect, useState } from "react";
 
 export default function StatsCard() {
   const {
     userCommitments,
     userCommitmentsCount,
-    validatorCommitments,
     validatorCommitmentsCount,
-    totalDonatedFormatted,
-    isLoading,
+    totalDonations,
+    isLoadingUserCommitments,
+    isLoadingValidatorCommitments,
+    isLoadingDonations,
   } = useMetaWillStats();
 
   const [totalStaked, setTotalStaked] = useState("0");
@@ -60,7 +61,7 @@ export default function StatsCard() {
       }
 
       // Format total staked
-      setTotalStaked(formatEther(totalStakedAmount));
+      setTotalStaked(formatUnits(totalStakedAmount, 6));
 
       // Hitung success rate
       if (completedCount > 0) {
@@ -80,6 +81,11 @@ export default function StatsCard() {
     }
   }, [userCommitments]);
 
+  const isLoading =
+    isLoadingUserCommitments ||
+    isLoadingValidatorCommitments ||
+    isLoadingDonations;
+
   // Data untuk statscard
   const stats = [
     {
@@ -96,7 +102,7 @@ export default function StatsCard() {
     },
     {
       name: "Total Donated",
-      value: isLoading ? "Loading..." : `${totalDonatedFormatted} ETH`,
+      value: isLoading ? "Loading..." : `${totalDonations} USDC`,
       change: "",
       changeType: "neutral",
     },

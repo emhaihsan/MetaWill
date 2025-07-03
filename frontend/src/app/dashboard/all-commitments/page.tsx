@@ -35,8 +35,9 @@ import Elements from "@/components/elements";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useAccount } from "wagmi";
-import { CONTRACT_ADDRESSES } from "@/lib/contract-config";
+import { contractConfig } from "@/lib/contract-config";
 import { formatEther } from "viem";
+import { useChainId } from "wagmi";
 
 // Enum untuk status komitmen
 enum CommitmentStatus {
@@ -67,6 +68,7 @@ export default function AllCommitmentsPage() {
   const [activeTab, setActiveTab] = useState("active");
   const [commitments, setCommitments] = useState<Commitment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const chainId = useChainId();
 
   const { address } = useAccount();
 
@@ -78,7 +80,7 @@ export default function AllCommitmentsPage() {
       try {
         // 1. Ambil total komitmen
         const totalResponse = await fetch(
-          `/api/read-contract?address=${CONTRACT_ADDRESSES.FACTORY}&functionName=getTotalCommitments`
+          `/api/read-contract?address=${contractConfig[chainId].metaWillFactory.address}&functionName=getTotalCommitments`
         );
         const totalData = await totalResponse.json();
 
@@ -93,7 +95,7 @@ export default function AllCommitmentsPage() {
         // 2. Ambil semua alamat komitmen
         for (let i = 0; i < total; i++) {
           const result = await fetch(
-            `/api/read-contract?address=${CONTRACT_ADDRESSES.FACTORY}&functionName=allCommitments&args=${i}`
+            `/api/read-contract?address=${contractConfig[chainId].metaWillFactory.address}&functionName=allCommitments&args=${i}`
           );
           const data = await result.json();
           if (data.result) {

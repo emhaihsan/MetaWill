@@ -30,8 +30,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MainContent() {
   const [activeTab, setActiveTab] = useState("active");
-  const { activeCommitments, pastCommitments, validationRequests, isLoading } =
-    useCommitments();
+  const {
+    activeCommitments,
+    pastCommitments,
+    validationRequests,
+    isLoadingUserCommitments,
+    isLoadingValidatorCommitments,
+  } = useCommitments();
+
+  // Tentukan status loading berdasarkan tab yang aktif
+  const isLoading =
+    activeTab === "validation"
+      ? isLoadingValidatorCommitments
+      : isLoadingUserCommitments;
 
   // Komponen loading skeleton
   const CommitmentSkeleton = () => (

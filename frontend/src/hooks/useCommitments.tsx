@@ -22,8 +22,12 @@ export type Commitment = {
 
 export function useCommitments() {
   const { address } = useAccount();
-  const { userCommitments, validatorCommitments, isLoading } =
-    useMetaWillStats();
+  const {
+    userCommitments,
+    validatorCommitments,
+    isLoadingUserCommitments,
+    isLoadingValidatorCommitments,
+  } = useMetaWillStats();
 
   const [activeCommitments, setActiveCommitments] = useState<Commitment[]>([]);
   const [pastCommitments, setPastCommitments] = useState<Commitment[]>([]);
@@ -34,7 +38,8 @@ export function useCommitments() {
 
   useEffect(() => {
     async function fetchCommitmentDetails() {
-      if (isLoading || !address) return;
+      if (isLoadingUserCommitments || isLoadingValidatorCommitments || !address)
+        return;
 
       setIsLoadingCommitments(true);
 
@@ -87,7 +92,13 @@ export function useCommitments() {
     }
 
     fetchCommitmentDetails();
-  }, [userCommitments, validatorCommitments, isLoading, address]);
+  }, [
+    userCommitments,
+    validatorCommitments,
+    isLoadingUserCommitments,
+    isLoadingValidatorCommitments,
+    address,
+  ]);
 
   // Helper function to fetch commitment details
   async function fetchCommitmentDetail(
@@ -190,6 +201,7 @@ export function useCommitments() {
     activeCommitments,
     pastCommitments,
     validationRequests,
-    isLoading: isLoading || isLoadingCommitments,
+    isLoadingUserCommitments,
+    isLoadingValidatorCommitments,
   };
 }

@@ -45,7 +45,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useMetaWill } from "@/components/providers";
 import { useDonationAddresses } from "@/hooks/useMetaWillContract";
-import { parseEther } from "viem";
+import { parseUnits } from "viem";
 import { toast } from "@/components/ui/toast";
 
 export default function NewCommitmentPage() {
@@ -99,7 +99,7 @@ export default function NewCommitmentPage() {
       const deadline = date ? Math.floor(date.getTime() / 1000) : 0;
 
       // Konversi amount ke BigInt (dalam wei)
-      const stakeAmount = parseEther(formData.amount);
+      const stakeAmount = parseUnits(formData.amount, 6);
 
       // Panggil fungsi createNewCommitment dari provider
       await createNewCommitment(
@@ -247,7 +247,7 @@ export default function NewCommitmentPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="amount">Stake Amount (ETH)</Label>
+                  <Label htmlFor="amount">Stake Amount (USDC)</Label>
                   <div className="relative">
                     <Input
                       id="amount"
@@ -261,7 +261,9 @@ export default function NewCommitmentPage() {
                       className="border-primary/20 focus-visible:ring-primary"
                     />
                     <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                      <span className="text-sm text-muted-foreground">ETH</span>
+                      <span className="text-sm text-muted-foreground">
+                        USDC
+                      </span>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -397,7 +399,7 @@ export default function NewCommitmentPage() {
                     <h3 className="text-sm font-medium text-muted-foreground">
                       Stake Amount
                     </h3>
-                    <p className="text-base">{formData.amount} ETH</p>
+                    <p className="text-base">{formData.amount} USDC</p>
                   </div>
 
                   <div>
@@ -433,12 +435,12 @@ export default function NewCommitmentPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Stake Amount:</span>
-                    <span>{formData.amount} ETH</span>
+                    <span className="font-medium">{formData.amount} USDC</span>
                   </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between font-bold">
                     <span>Total:</span>
-                    <span>{formData.amount} ETH</span>
+                    <span className="font-medium">{formData.amount} USDC</span>
                   </div>
                 </div>
 
@@ -446,7 +448,7 @@ export default function NewCommitmentPage() {
                   <Info className="h-4 w-4" />
                   <AlertTitle>Note</AlertTitle>
                   <AlertDescription>
-                    By confirming, you agree to stake {formData.amount} ETH as
+                    By confirming, you agree to stake {formData.amount} USDC as
                     collateral for your commitment. This amount will be returned
                     to you upon successful completion, or donated to{" "}
                     {formData.donationIndex !== "" && !isLoadingDonations
@@ -510,7 +512,9 @@ export default function NewCommitmentPage() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Stake:</span>
-                      <span className="font-medium">{formData.amount} ETH</span>
+                      <span className="font-medium">
+                        {formData.amount} USDC
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Status:</span>

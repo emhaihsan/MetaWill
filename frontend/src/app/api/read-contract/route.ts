@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http, parseAbi } from "viem";
-import { lineaTestnet } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 import { MetaWillCommitmentABI } from "../../../abi/MetaWillCommitment";
 import MetaWillFactoryABI from "../../../abi/MetaWillFactory.json";
 import MetaWillDonationABI from "../../../abi/MetaWillDonation.json";
 
 // Buat client untuk berinteraksi dengan blockchain
 const publicClient = createPublicClient({
-  chain: lineaTestnet,
-  transport: http(process.env.LINEA_RPC_URL || ""),
+  chain: baseSepolia,
+  transport: http(process.env.BASE_SEPOLIA_RPC_URL || ""),
 });
 
 // Fungsi untuk mengkonversi BigInt menjadi string
