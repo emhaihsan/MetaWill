@@ -9,7 +9,7 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { Wallet } from "lucide-react";
-import { linea, lineaSepolia } from "wagmi/chains";
+import { base, baseSepolia } from "wagmi/chains";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,10 +41,10 @@ export function ConnectButton() {
 
   const getNetworkName = (id: number) => {
     switch (id) {
-      case linea.id:
-        return "Linea";
-      case lineaSepolia.id:
-        return "Linea Sepolia";
+      case base.id:
+        return "Base";
+      case baseSepolia.id:
+        return "Base Sepolia";
       default:
         return "Unknown Network";
     }
@@ -66,14 +66,14 @@ export function ConnectButton() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => switchChain({ chainId: linea.id })}
+                onClick={() => switchChain({ chainId: base.id })}
               >
-                Linea Mainnet
+                Base Mainnet
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => switchChain({ chainId: lineaSepolia.id })}
+                onClick={() => switchChain({ chainId: baseSepolia.id })}
               >
-                Linea Sepolia (Testnet)
+                Base Sepolia (Testnet)
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

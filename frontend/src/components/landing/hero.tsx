@@ -40,8 +40,8 @@ export default function Hero() {
               </h1>
               <p className="text-muted-foreground text-lg md:text-xl max-w-xl">
                 MetaWill is a decentralized platform that helps you fulfill
-                personal commitments through financial accountability. Stake ETH
-                on your promises and succeed—or donate to charity.
+                personal commitments through financial accountability. Stake
+                USDC on your promises and succeed—or donate to charity.
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row pt-2">
