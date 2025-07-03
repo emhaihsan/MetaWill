@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "./interfaces/IMetaWillFactory.sol";
+import "./interfaces/IERC20.sol";
 import "./MetaWillCommitment.sol";
 
 contract MetaWillFactory is IMetaWillFactory {
     address public owner;
+    IERC20 public usdcToken;
     uint256 public minStakeAmount;
     uint256 public maxStakeAmount;
 
@@ -26,30 +28,24 @@ contract MetaWillFactory is IMetaWillFactory {
     event StakeLimitsUpdated(uint256 minStake, uint256 maxStake);
 
     constructor(
+        address _usdcTokenAddress,
         address[] memory _initialDonationAddresses,
         string[] memory _initialDonationNames,
         uint256 _minStake,
         uint256 _maxStake
     ) {
-        require(
-            _initialDonationAddresses.length == _initialDonationNames.length,
-            "Arrays must have same length"
-        );
-        require(
-            _initialDonationAddresses.length > 0,
-            "Must provide at least one donation address"
-        );
+        require(_initialDonationAddresses.length == _initialDonationNames.length, "Arrays must have same length");
+        require(_initialDonationAddresses.length > 0, "Must provide at least one donation address");
 
         owner = msg.sender;
+        usdcToken = IERC20(_usdcTokenAddress);
         minStakeAmount = _minStake;
         maxStakeAmount = _maxStake;
 
         // Initialize donation addresses
-        for (uint i = 0; i < _initialDonationAddresses.length; i++) {
+        for (uint256 i = 0; i < _initialDonationAddresses.length; i++) {
             donationAddresses.push(_initialDonationAddresses[i]);
-            donationNames[_initialDonationAddresses[i]] = _initialDonationNames[
-                i
-            ];
+            donationNames[_initialDonationAddresses[i]] = _initialDonationNames[i];
         }
     }
 
@@ -58,43 +54,29 @@ contract MetaWillFactory is IMetaWillFactory {
         string memory _description,
         uint256 _deadline,
         address _validator,
-        uint256 _donationAddressIndex // Index of the chosen donation address
-    ) external payable returns (address) {
-        require(msg.value >= minStakeAmount, "Stake amount below minimum");
-        require(msg.value <= maxStakeAmount, "Stake amount above maximum");
-        require(
-            _validator != msg.sender,
-            "Validator cannot be the same as creator"
-        );
+        uint256 _donationAddressIndex, // Index of the chosen donation address
+        uint256 _stakeAmount
+    ) external returns (address) {
+        require(_stakeAmount >= minStakeAmount, "Stake amount below minimum");
+        require(_stakeAmount <= maxStakeAmount, "Stake amount above maximum");
+        require(_validator != msg.sender, "Validator cannot be the same as creator");
         require(_deadline > block.timestamp, "Deadline must be in the future");
-        require(
-            _donationAddressIndex < donationAddresses.length,
-            "Invalid donation address index"
-        );
+        require(_donationAddressIndex < donationAddresses.length, "Invalid donation address index");
 
         address selectedDonation = donationAddresses[_donationAddressIndex];
 
-        MetaWillCommitment newCommitment = new MetaWillCommitment{
-            value: msg.value
-        }(
-            msg.sender,
-            _validator,
-            _title,
-            _description,
-            _deadline,
-            selectedDonation
+        MetaWillCommitment newCommitment = new MetaWillCommitment(
+            address(usdcToken), msg.sender, _validator, _title, _description, _deadline, _stakeAmount, selectedDonation
         );
+
+        // Transfer the stake from the user to the new commitment contract
+        require(usdcToken.transferFrom(msg.sender, address(newCommitment), _stakeAmount), "USDC transfer failed");
 
         address commitmentAddress = address(newCommitment);
         userCommitments[msg.sender].push(commitmentAddress);
         allCommitments.push(commitmentAddress);
 
-        emit CommitmentCreated(
-            msg.sender,
-            commitmentAddress,
-            _title,
-            selectedDonation
-        );
+        emit CommitmentCreated(msg.sender, commitmentAddress, _title, selectedDonation);
 
         validatorCommitments[_validator].push(commitmentAddress);
 
@@ -102,19 +84,13 @@ contract MetaWillFactory is IMetaWillFactory {
     }
 
     // Admin functions to manage donation addresses
-    function addDonationAddress(
-        address _newDonationAddress,
-        string memory _name
-    ) external {
+    function addDonationAddress(address _newDonationAddress, string memory _name) external {
         require(msg.sender == owner, "Only owner can add donation addresses");
         require(_newDonationAddress != address(0), "Cannot add zero address");
 
         // Check if address already exists
-        for (uint i = 0; i < donationAddresses.length; i++) {
-            require(
-                donationAddresses[i] != _newDonationAddress,
-                "Donation address already exists"
-            );
+        for (uint256 i = 0; i < donationAddresses.length; i++) {
+            require(donationAddresses[i] != _newDonationAddress, "Donation address already exists");
         }
 
         donationAddresses.push(_newDonationAddress);
@@ -124,22 +100,14 @@ contract MetaWillFactory is IMetaWillFactory {
     }
 
     function removeDonationAddress(uint256 _index) external {
-        require(
-            msg.sender == owner,
-            "Only owner can remove donation addresses"
-        );
+        require(msg.sender == owner, "Only owner can remove donation addresses");
         require(_index < donationAddresses.length, "Invalid index");
-        require(
-            donationAddresses.length > 1,
-            "Cannot remove the last donation address"
-        );
+        require(donationAddresses.length > 1, "Cannot remove the last donation address");
 
         address addressToRemove = donationAddresses[_index];
 
         // Remove from array by replacing with the last element and then popping
-        donationAddresses[_index] = donationAddresses[
-            donationAddresses.length - 1
-        ];
+        donationAddresses[_index] = donationAddresses[donationAddresses.length - 1];
         donationAddresses.pop();
 
         // Clear the name mapping
@@ -149,9 +117,7 @@ contract MetaWillFactory is IMetaWillFactory {
     }
 
     // View functions
-    function getUserCommitments(
-        address _user
-    ) external view returns (address[] memory) {
+    function getUserCommitments(address _user) external view returns (address[] memory) {
         return userCommitments[_user];
     }
 
@@ -159,14 +125,10 @@ contract MetaWillFactory is IMetaWillFactory {
         return allCommitments.length;
     }
 
-    function getDonationAddresses()
-        external
-        view
-        returns (address[] memory, string[] memory)
-    {
+    function getDonationAddresses() external view returns (address[] memory, string[] memory) {
         string[] memory names = new string[](donationAddresses.length);
 
-        for (uint i = 0; i < donationAddresses.length; i++) {
+        for (uint256 i = 0; i < donationAddresses.length; i++) {
             names[i] = donationNames[donationAddresses[i]];
         }
 
@@ -177,9 +139,7 @@ contract MetaWillFactory is IMetaWillFactory {
         return donationAddresses.length;
     }
 
-    function getValidatorCommitments(
-        address _validator
-    ) external view returns (address[] memory) {
+    function getValidatorCommitments(address _validator) external view returns (address[] memory) {
         return validatorCommitments[_validator];
     }
 

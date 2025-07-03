@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "./interfaces/IMetaWillCommitment.sol";
 import "./interfaces/IMetaWillDonation.sol";
+import "./interfaces/IERC20.sol";
 
 contract MetaWillCommitment is IMetaWillCommitment {
     // Commitment details
+    IERC20 public usdcToken;
     address public creator;
     address public validator;
     string public title;
@@ -21,19 +23,22 @@ contract MetaWillCommitment is IMetaWillCommitment {
     bool public validatorReportedSuccess;
 
     constructor(
+        address _usdcTokenAddress,
         address _creator,
         address _validator,
         string memory _title,
         string memory _description,
         uint256 _deadline,
+        uint256 _stakeAmount,
         address _donationAddress
-    ) payable {
+    ) {
+        usdcToken = IERC20(_usdcTokenAddress);
         creator = _creator;
         validator = _validator;
         title = _title;
         description = _description;
         deadline = _deadline;
-        stakeAmount = msg.value;
+        stakeAmount = _stakeAmount;
         donationAddress = _donationAddress;
         status = CommitmentStatus.Active;
     }
@@ -41,10 +46,7 @@ contract MetaWillCommitment is IMetaWillCommitment {
     // Creator reports completion status
     function reportCompletion(bool _success) external {
         require(msg.sender == creator, "Only creator can report completion");
-        require(
-            status == CommitmentStatus.Active,
-            "Commitment is no longer active"
-        );
+        require(status == CommitmentStatus.Active, "Commitment is no longer active");
 
         creatorReportedSuccess = _success;
         emit StatusReported(creator, _success);
@@ -58,10 +60,7 @@ contract MetaWillCommitment is IMetaWillCommitment {
     // Validator confirms or disputes the completion
     function validateCompletion(bool _success) external {
         require(msg.sender == validator, "Only validator can validate");
-        require(
-            status == CommitmentStatus.Active,
-            "Commitment is no longer active"
-        );
+        require(status == CommitmentStatus.Active, "Commitment is no longer active");
 
         validatorConfirmed = true;
         validatorReportedSuccess = _success;
@@ -87,10 +86,7 @@ contract MetaWillCommitment is IMetaWillCommitment {
     // Anyone can trigger resolution after deadline
     function resolveAfterDeadline() external {
         require(block.timestamp > deadline, "Deadline has not passed yet");
-        require(
-            status == CommitmentStatus.Active,
-            "Commitment is no longer active"
-        );
+        require(status == CommitmentStatus.Active, "Commitment is no longer active");
 
         // If validator has confirmed, use their judgment
         if (validatorConfirmed) {
@@ -112,18 +108,13 @@ contract MetaWillCommitment is IMetaWillCommitment {
         if (_success) {
             status = CommitmentStatus.CompletedSuccess;
             // Return funds to creator
-            (bool sent, ) = creator.call{value: stakeAmount}("");
-            require(sent, "Failed to return funds");
+            require(usdcToken.transfer(creator, stakeAmount), "Failed to return funds");
             emit FundsReturned(creator, stakeAmount);
         } else {
             status = CommitmentStatus.CompletedFailure;
             // Send funds to donation address
-            IMetaWillDonation(donationAddress).recordDonation(
-                creator,
-                stakeAmount
-            );
-            (bool sent, ) = donationAddress.call{value: stakeAmount}("");
-            require(sent, "Failed to donate funds");
+            IMetaWillDonation(donationAddress).recordDonation(creator, stakeAmount);
+            require(usdcToken.transfer(donationAddress, stakeAmount), "Failed to donate funds");
             emit FundsDonated(donationAddress, stakeAmount);
         }
 
