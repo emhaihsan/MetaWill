@@ -1,16 +1,14 @@
 [
   {
     "type": "constructor",
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "_usdcTokenAddress",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
     "stateMutability": "nonpayable"
-  },
-  {
-    "type": "fallback",
-    "stateMutability": "payable"
-  },
-  {
-    "type": "receive",
-    "stateMutability": "payable"
   },
   {
     "type": "function",
@@ -122,6 +120,19 @@
   },
   {
     "type": "function",
+    "name": "usdcToken",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IERC20"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "withdrawFunds",
     "inputs": [
       {
@@ -143,7 +154,7 @@
     "name": "DonationReceived",
     "inputs": [
       {
-        "name": "from",
+        "name": "donor",
         "type": "address",
         "indexed": true,
         "internalType": "address"
@@ -162,7 +173,7 @@
     "name": "FundsWithdrawn",
     "inputs": [
       {
-        "name": "to",
+        "name": "recipient",
         "type": "address",
         "indexed": true,
         "internalType": "address"
