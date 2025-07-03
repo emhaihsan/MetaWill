@@ -9,12 +9,12 @@ import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 export function useMetaWillStats() {
-  const { address } = useAccount();
+  const { address, isConnecting } = useAccount();
   const chainId = useChainId();
   const config = contractConfig[chainId];
 
   // Mendapatkan komitmen user
-  const { data: userCommitments, isLoading: isLoadingUserCommitments } =
+  const { data: userCommitments, isLoading: isUserQueryLoading } =
     useReadContract({
       address: config?.metaWillFactory.address,
       abi: config?.metaWillFactory.abi,
@@ -26,18 +26,16 @@ export function useMetaWillStats() {
     });
 
   // Mendapatkan komitmen yang perlu divalidasi oleh user
-  const {
-    data: validatorCommitments,
-    isLoading: isLoadingValidatorCommitments,
-  } = useReadContract({
-    address: config?.metaWillFactory.address,
-    abi: config?.metaWillFactory.abi,
-    functionName: "getValidatorCommitments",
-    args: [address],
-    query: {
-      enabled: !!address && !!config,
-    },
-  });
+  const { data: validatorCommitments, isLoading: isValidatorQueryLoading } =
+    useReadContract({
+      address: config?.metaWillFactory.address,
+      abi: config?.metaWillFactory.abi,
+      functionName: "getValidatorCommitments",
+      args: [address],
+      query: {
+        enabled: !!address && !!config,
+      },
+    });
 
   // Mendapatkan total donasi dari user yang sedang login
   const { data: totalDonation1, isLoading: isLoadingDonation1 } =
@@ -85,10 +83,10 @@ export function useMetaWillStats() {
   return {
     userCommitments: userCommitmentsArray,
     userCommitmentsCount: userCommitmentsArray.length,
-    isLoadingUserCommitments,
+    isLoadingUserCommitments: isConnecting || isUserQueryLoading,
     validatorCommitments: validatorCommitmentsArray,
     validatorCommitmentsCount: validatorCommitmentsArray.length,
-    isLoadingValidatorCommitments,
+    isLoadingValidatorCommitments: isConnecting || isValidatorQueryLoading,
     totalDonations,
     isLoadingDonations:
       isLoadingDonation1 || isLoadingDonation2 || isLoadingDonation3,

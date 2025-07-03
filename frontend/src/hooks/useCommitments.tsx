@@ -38,8 +38,14 @@ export function useCommitments() {
 
   useEffect(() => {
     async function fetchCommitmentDetails() {
-      if (isLoadingUserCommitments || isLoadingValidatorCommitments || !address)
+      if (
+        isLoadingUserCommitments ||
+        isLoadingValidatorCommitments ||
+        !address
+      ) {
+        setIsLoadingCommitments(true);
         return;
+      }
 
       setIsLoadingCommitments(true);
 
@@ -201,7 +207,8 @@ export function useCommitments() {
     activeCommitments,
     pastCommitments,
     validationRequests,
-    isLoadingUserCommitments,
-    isLoadingValidatorCommitments,
+    isLoadingUserCommitments: isLoadingUserCommitments || isLoadingCommitments,
+    isLoadingValidatorCommitments:
+      isLoadingValidatorCommitments || isLoadingCommitments,
   };
 }
