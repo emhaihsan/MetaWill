@@ -3,7 +3,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { config } from "@/lib/wagmi";
-import { ReactNode, useState, createContext, useContext, useCallback } from "react";
+import {
+  ReactNode,
+  useState,
+  createContext,
+  useContext,
+  useCallback,
+} from "react";
 import {
   useMetaWillFactory,
   useUserCommitments,
@@ -29,7 +35,7 @@ type MetaWillContextType = {
     validator: Address,
     donationAddressIndex: number,
     stakeAmount: bigint
-  ) => Promise<void>;
+  ) => Promise<Address>;
   isCreatingCommitment: boolean;
 
   // Commitment functions (untuk commitment yang aktif)
@@ -38,8 +44,10 @@ type MetaWillContextType = {
   activeCommitmentDetails: any;
   isLoadingCommitmentDetails: boolean;
   refreshCommitmentDetails: () => Promise<void>;
-  reportCommitmentSuccess: () => Promise<void>;
-  validateCommitmentCompletion: (isSuccessful: boolean) => Promise<void>;
+  reportCommitmentSuccess: () => Promise<Address | undefined>;
+  validateCommitmentCompletion: (
+    isSuccessful: boolean
+  ) => Promise<Address | undefined>;
   isReporting: boolean;
   isValidating: boolean;
 };
@@ -63,15 +71,16 @@ function MetaWillProvider({ children }: { children: ReactNode }) {
     useState<Address | null>(null);
 
   // Factory hooks
-  const { createNewCommitment, isCreating: isCreatingCommitment } = useMetaWillFactory();
-  
+  const { createNewCommitment, isCreating: isCreatingCommitment } =
+    useMetaWillFactory();
+
   // User commitments
   const {
     commitments: userCommitments,
     isLoading: isLoadingUserCommitments,
     refetch: refetchUserCommitments,
   } = useUserCommitments(address);
-  
+
   // Validator commitments
   const {
     commitments: validatorCommitments,

@@ -23,22 +23,23 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "MetaWill | Digital Legacy Management Platform",
+  title: "MetaWill",
   description:
-    "Secure your digital legacy with MetaWill - the platform that helps you manage and transfer your digital assets to your loved ones after you're gone.",
+    "MetaWill empowers you to make, prove, and fulfill personal commitments with on-chain USDC stakes, trusted validators, and transparent outcomes. Commit with confidence on metawill.my.id.",
   keywords: [
-    "digital legacy",
-    "digital inheritance",
-    "crypto will",
-    "estate planning",
-    "digital assets",
-    "blockchain",
-    "web3",
+    "blockchain commitment",
+    "on-chain pledge",
+    "digital accountability",
+    "USDC staking",
+    "goal validation",
+    "smart contract commitment",
+    "web3 commitment",
+    "MetaWill",
   ],
   authors: [{ name: "MetaWill Team" }],
   creator: "MetaWill",
   publisher: "MetaWill",
-  metadataBase: new URL("https://metawill.vercel.app"),
+  metadataBase: new URL("https://metawill.my.id"),
   alternates: {
     canonical: "/",
   },
@@ -53,25 +54,25 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://metawill.vercel.app",
-    title: "MetaWill | Digital Legacy Management Platform",
+    url: "https://metawill.my.id",
+    title: "MetaWill | Blockchain Commitment Platform",
     description:
-      "Secure your digital legacy with MetaWill - the platform that helps you manage and transfer your digital assets to your loved ones after you're gone.",
+      "Make and track real commitments on-chain. Stake USDC, assign validators, and let MetaWill help you achieve your goals transparently.",
     siteName: "MetaWill",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "MetaWill - Digital Legacy Management Platform",
+        alt: "MetaWill - Blockchain Commitment Platform",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MetaWill | Digital Legacy Management Platform",
+    title: "MetaWill | Blockchain Commitment Platform",
     description:
-      "Secure your digital legacy with MetaWill - the platform that helps you manage and transfer your digital assets to your loved ones after you're gone.",
+      "MetaWill lets you commit to your goals with USDC stakes, on-chain proof, and trusted validation. Start building better habits—publicly and transparently.",
     creator: "@metawill",
     images: ["/twitter-image.jpg"],
   },
