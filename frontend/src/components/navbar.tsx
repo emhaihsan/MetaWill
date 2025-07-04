@@ -8,7 +8,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, ArrowRight } from "lucide-react";
+import { Menu, ArrowRight, ArrowUpLeft } from "lucide-react";
 
 const navLinks = [
   { href: "#how-it-works", label: "Features" },
@@ -21,6 +21,8 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+
+  const isDashboardPage = pathname.startsWith("/dashboard");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,6 +47,40 @@ export default function Navbar() {
     </>
   );
 
+  const getDashboardButton = () => {
+    if (!isConnected) return null;
+
+    if (pathname === "/") {
+      return (
+        <Button
+          variant="outline"
+          size="sm"
+          className="hidden sm:flex group border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 hover:text-orange-300 transition-all duration-300"
+          onClick={() => router.push("/dashboard")}
+        >
+          Dashboard
+          <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+        </Button>
+      );
+    }
+
+    if (isDashboardPage && pathname !== "/dashboard") {
+      return (
+        <Button
+          variant="outline"
+          size="sm"
+          className="hidden sm:flex group border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 hover:text-orange-300 transition-all duration-300"
+          onClick={() => router.push("/dashboard")}
+        >
+          <ArrowUpLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Button>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <header
       className={`fixed top-0 z-50 w-full transition-all duration-300 ${
@@ -65,20 +101,12 @@ export default function Navbar() {
           <span className="text-xl font-bold text-white">MetaWill</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">{navContent}</nav>
+        {!isDashboardPage && (
+          <nav className="hidden md:flex items-center gap-6">{navContent}</nav>
+        )}
 
         <div className="flex items-center gap-3">
-          {isConnected && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden sm:flex group border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 hover:text-orange-300 transition-all duration-300"
-              onClick={() => router.push("/dashboard")}
-            >
-              Dashboard
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Button>
-          )}
+          {getDashboardButton()}
           <ConnectButton />
           <div className="md:hidden">
             <Sheet>
@@ -96,8 +124,8 @@ export default function Navbar() {
                 className="bg-gray-950/80 backdrop-blur-lg border-l-white/10 text-white"
               >
                 <nav className="flex flex-col gap-6 text-lg mt-10">
-                  {navContent}
-                  {isConnected && (
+                  {!isDashboardPage && navContent}
+                  {isConnected && pathname === "/" && (
                     <Button
                       variant="outline"
                       className="w-full group border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 hover:text-orange-300 transition-all duration-300"
@@ -105,6 +133,16 @@ export default function Navbar() {
                     >
                       Dashboard
                       <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Button>
+                  )}
+                  {isDashboardPage && pathname !== "/dashboard" && (
+                    <Button
+                      variant="outline"
+                      className="w-full group border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 hover:text-orange-300 transition-all duration-300"
+                      onClick={() => router.push("/dashboard")}
+                    >
+                      <ArrowUpLeft className="mr-2 h-4 w-4" />
+                      Back to Dashboard
                     </Button>
                   )}
                 </nav>

@@ -413,7 +413,7 @@ export default function ValidationRequestsPage() {
                         </div>
                       </CardContent>
                       <CardFooter className="p-0 mt-6 pt-4 border-t border-white/10">
-                        <div className="flex w-full justify-between items-center">
+                        <div className="flex w-full justify-between">
                           <div className="flex gap-2">
                             <Button
                               onClick={() => handleApprove(request)}

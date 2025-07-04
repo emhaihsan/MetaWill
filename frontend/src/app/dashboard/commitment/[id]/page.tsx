@@ -277,7 +277,6 @@ export default function CommitmentDetailPage({
     <div className="flex min-h-screen flex-col bg-black bg-[radial-gradient(ellipse_at_top,rgba(246,133,27,0.15)_0%,transparent_60%)] text-gray-100">
       <Elements />
       <Navbar />
-
       <main className="flex-1 container px-4 pb-8 pt-28">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
@@ -288,17 +287,6 @@ export default function CommitmentDetailPage({
               <p className="text-gray-400 mt-2 max-w-2xl truncate">
                 {commitment.description}
               </p>
-            </div>
-            <div className="flex-shrink-0">
-              <Button
-                variant="outline"
-                className="gap-2 border-white/20 text-gray-900 hover:bg-white/10 hover:text-white"
-                asChild
-              >
-                <Link href="/dashboard">
-                  <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
-                </Link>
-              </Button>
             </div>
           </div>
 

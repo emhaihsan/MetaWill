@@ -150,15 +150,6 @@ export default function NewCommitmentPage() {
             <h1 className="text-3xl font-bold text-white tracking-tight">
               Create New Commitment
             </h1>
-            <Button
-              variant="outline"
-              className="gap-2 border-orange-500/60 text-orange-400 hover:bg-orange-500/10 hover:text-orange-200"
-              asChild
-            >
-              <Link href="/dashboard">
-                <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
-              </Link>
-            </Button>
           </div>
 
           {/* Step 1: Commitment Details */}

@@ -336,15 +336,6 @@ export default function AllCommitmentsPage() {
                 platform.
               </p>
             </div>
-            <Button
-              variant="outline"
-              className="gap-2 border-white/20 text-gray-900 hover:bg-white/10 hover:text-white"
-              asChild
-            >
-              <Link href="/dashboard">
-                <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
-              </Link>
-            </Button>
           </div>
 
           <Tabs

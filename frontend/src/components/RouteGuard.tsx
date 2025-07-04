@@ -2,32 +2,42 @@
 
 import { useAccount } from "wagmi";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function RouteGuard({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isConnected, isConnecting } = useAccount();
+  const { status } = useAccount();
   const pathname = usePathname();
   const router = useRouter();
+  const isMounted = useRef(false);
+
+  const isProtectedRoute = pathname.startsWith("/dashboard");
 
   useEffect(() => {
-    // Jangan lakukan apa-apa saat koneksi sedang diproses
-    if (isConnecting) return;
-
-    // Jika pengguna tidak terhubung dan mencoba mengakses rute yang dilindungi
-    if (!isConnected && pathname.startsWith("/dashboard")) {
-      // Alihkan ke halaman utama
+    // Setelah render pertama, jika kita berada di rute yang dilindungi dan koneksi terputus, alihkan.
+    if (isMounted.current && isProtectedRoute && status === "disconnected") {
       router.push("/");
     }
-  }, [isConnected, isConnecting, pathname, router]);
+    isMounted.current = true;
+  }, [status, isProtectedRoute, router]);
 
-  // Selama koneksi, kita bisa menampilkan layar loading atau null
-  if (isConnecting) {
-    return null; // atau komponen loading
+  // Tampilkan layar pemuatan untuk rute yang dilindungi hingga statusnya 'connected'.
+  if (isProtectedRoute && status !== "connected") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-orange-500 mx-auto"></div>
+          <p className="text-white mt-4 text-lg">
+            Verifying Wallet Connection...
+          </p>
+        </div>
+      </div>
+    );
   }
 
+  // Tampilkan konten untuk rute publik, atau untuk rute yang dilindungi saat terhubung.
   return <>{children}</>;
 }
