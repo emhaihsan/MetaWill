@@ -1,84 +1,94 @@
 // /Users/emhaihsan/Documents/Github/hackathons/metawill/frontend/src/hooks/useMetaWillStats.ts
 "use client";
 
-import { useReadContract } from "wagmi";
-import { CONTRACT_ADDRESSES } from "@/lib/contract-config";
+import { useReadContract, useChainId } from "wagmi";
+import { contractConfig } from "@/lib/contract-config";
 import MetaWillFactoryABI from "@/abi/MetaWillFactory.json";
 import MetaWillDonationABI from "@/abi/MetaWillDonation.json";
-import { formatEther } from "viem";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 export function useMetaWillStats() {
-  const { address } = useAccount();
+  const { address, isConnecting } = useAccount();
+  const chainId = useChainId();
+  const config = contractConfig[chainId];
 
   // Mendapatkan komitmen user
-  const { data: userCommitments, isLoading: isLoadingUserCommitments } =
+  const { data: userCommitments, isLoading: isUserQueryLoading } =
     useReadContract({
-      address: CONTRACT_ADDRESSES.FACTORY,
-      abi: MetaWillFactoryABI,
+      address: config?.metaWillFactory.address,
+      abi: config?.metaWillFactory.abi,
       functionName: "getUserCommitments",
       args: [address],
       query: {
-        enabled: !!address,
+        enabled: !!address && !!config,
       },
     });
 
   // Mendapatkan komitmen yang perlu divalidasi oleh user
-  const {
-    data: validatorCommitments,
-    isLoading: isLoadingValidatorCommitments,
-  } = useReadContract({
-    address: CONTRACT_ADDRESSES.FACTORY,
-    abi: MetaWillFactoryABI,
-    functionName: "getValidatorCommitments",
-    args: [address],
-    query: {
-      enabled: !!address,
-    },
-  });
+  const { data: validatorCommitments, isLoading: isValidatorQueryLoading } =
+    useReadContract({
+      address: config?.metaWillFactory.address,
+      abi: config?.metaWillFactory.abi,
+      functionName: "getValidatorCommitments",
+      args: [address],
+      query: {
+        enabled: !!address && !!config,
+      },
+    });
 
-  // Mendapatkan total donasi dari ketiga kontrak donasi
+  // Mendapatkan total donasi dari user yang sedang login
   const { data: totalDonation1, isLoading: isLoadingDonation1 } =
     useReadContract({
-      address: CONTRACT_ADDRESSES.DONATION_1,
+      address: config?.donation.address1,
       abi: MetaWillDonationABI,
-      functionName: "getTotalDonations",
+      functionName: "getDonorContribution",
+      args: [address],
+      query: { enabled: !!address && !!config },
     });
 
   const { data: totalDonation2, isLoading: isLoadingDonation2 } =
     useReadContract({
-      address: CONTRACT_ADDRESSES.DONATION_2,
+      address: config?.donation.address2,
       abi: MetaWillDonationABI,
-      functionName: "getTotalDonations",
+      functionName: "getDonorContribution",
+      args: [address],
+      query: { enabled: !!address && !!config },
     });
 
   const { data: totalDonation3, isLoading: isLoadingDonation3 } =
     useReadContract({
-      address: CONTRACT_ADDRESSES.DONATION_3,
+      address: config?.donation.address3,
       abi: MetaWillDonationABI,
-      functionName: "getTotalDonations",
+      functionName: "getDonorContribution",
+      args: [address],
+      query: { enabled: !!address && !!config },
     });
 
-  // Menghitung total donasi dari semua kontrak donasi
-  const totalDonated =
-    (totalDonation1 ? BigInt(totalDonation1.toString()) : BigInt(0)) +
-    (totalDonation2 ? BigInt(totalDonation2.toString()) : BigInt(0)) +
-    (totalDonation3 ? BigInt(totalDonation3.toString()) : BigInt(0));
+  const totalDonations =
+    totalDonation1 !== undefined &&
+    totalDonation2 !== undefined &&
+    totalDonation3 !== undefined
+      ? formatUnits(
+          (totalDonation1 as bigint) +
+            (totalDonation2 as bigint) +
+            (totalDonation3 as bigint),
+          6
+        )
+      : "0";
+
+  const userCommitmentsArray = (userCommitments as any[]) || [];
+  const validatorCommitmentsArray = (validatorCommitments as any[]) || [];
 
   return {
-    userCommitments: (userCommitments as `0x${string}`[]) || [],
-    userCommitmentsCount: userCommitments ? (userCommitments as any).length : 0,
-    validatorCommitments: (validatorCommitments as `0x${string}`[]) || [],
-    validatorCommitmentsCount: validatorCommitments
-      ? (validatorCommitments as any).length
-      : 0,
-    totalDonated,
-    totalDonatedFormatted: formatEther(totalDonated),
-    isLoading:
-      isLoadingUserCommitments ||
-      isLoadingValidatorCommitments ||
-      isLoadingDonation1 ||
-      isLoadingDonation2 ||
-      isLoadingDonation3,
+    userCommitments: userCommitmentsArray,
+    userCommitmentsCount: userCommitmentsArray.length,
+    isLoadingUserCommitments: isConnecting || isUserQueryLoading,
+    validatorCommitments: validatorCommitmentsArray,
+    validatorCommitmentsCount: validatorCommitmentsArray.length,
+    isLoadingValidatorCommitments: isConnecting || isValidatorQueryLoading,
+    totalDonations,
+    isLoadingDonations:
+      isLoadingDonation1 || isLoadingDonation2 || isLoadingDonation3,
   };
 }

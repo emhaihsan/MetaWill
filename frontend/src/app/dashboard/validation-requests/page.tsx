@@ -10,6 +10,7 @@ import {
   Filter,
   ChevronRight,
   CheckCircle,
+  User,
   XCircle,
   Clock,
   AlertCircle,
@@ -51,9 +52,10 @@ import Elements from "@/components/elements";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useAccount } from "wagmi";
-import { CONTRACT_ADDRESSES } from "@/lib/contract-config";
-import { formatEther } from "viem";
+import { contractConfig } from "@/lib/contract-config";
+import { formatUnits } from "viem";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useChainId } from "wagmi";
 
 // Enum untuk status komitmen
 enum CommitmentStatus {
@@ -85,6 +87,7 @@ export default function ValidationRequestsPage() {
   const [sortBy, setSortBy] = useState("deadline");
   const [selectedRequest, setSelectedRequest] =
     useState<ValidationRequest | null>(null);
+  const chainId = useChainId();
   const [feedbackText, setFeedbackText] = useState("");
   const [dialogAction, setDialogAction] = useState<"approve" | "reject" | null>(
     null
@@ -99,30 +102,26 @@ export default function ValidationRequestsPage() {
 
   // Komponen skeleton untuk loading state
   const ValidationRequestSkeleton = () => (
-    <Card className="border border-primary/10 bg-background/50 backdrop-blur-sm overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-1 bg-primary/30"></div>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <Skeleton className="h-6 w-48 mb-2" />
-            <Skeleton className="h-4 w-64" />
-          </div>
-          <Skeleton className="h-6 w-20" />
+    <div className="p-6 bg-black/30 backdrop-blur-lg rounded-2xl border border-white/10 animate-pulse">
+      <div className="flex items-start justify-between">
+        <div>
+          <Skeleton className="h-6 w-48 mb-2 bg-gray-700" />
+          <Skeleton className="h-4 w-64 bg-gray-700" />
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-40" />
-          <Skeleton className="h-4 w-40" />
+        <Skeleton className="h-6 w-20 bg-gray-700" />
+      </div>
+      <div className="mt-6 space-y-3">
+        <Skeleton className="h-4 w-40 bg-gray-700" />
+        <Skeleton className="h-4 w-36 bg-gray-700" />
+      </div>
+      <div className="mt-6 pt-4 border-t border-white/10 flex justify-between">
+        <div className="flex gap-2">
+          <Skeleton className="h-9 w-20 bg-gray-700" />
+          <Skeleton className="h-9 w-20 bg-gray-700" />
         </div>
-      </CardContent>
-      <CardFooter className="border-t border-primary/10 bg-muted/30">
-        <div className="flex w-full justify-between">
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-8 w-24" />
-        </div>
-      </CardFooter>
-    </Card>
+        <Skeleton className="h-9 w-24 bg-gray-700" />
+      </div>
+    </div>
   );
 
   // Ambil semua komitmen yang perlu divalidasi dari blockchain
@@ -135,7 +134,7 @@ export default function ValidationRequestsPage() {
       try {
         // 1. Ambil komitmen yang perlu divalidasi oleh user
         const validatorResponse = await fetch(
-          `/api/read-contract?address=${CONTRACT_ADDRESSES.FACTORY}&functionName=getValidatorCommitments&args=${address}`
+          `/api/read-contract?address=${contractConfig[chainId].metaWillFactory.address}&functionName=getValidatorCommitments&args=${address}`
         );
         const validatorData = await validatorResponse.json();
 
@@ -164,7 +163,7 @@ export default function ValidationRequestsPage() {
                 title: commitmentData.title,
                 description: commitmentData.description,
                 staked:
-                  formatEther(BigInt(commitmentData.stakeAmount)) + " ETH",
+                  formatUnits(BigInt(commitmentData.stakeAmount), 6) + " USDC",
                 deadline: Number(commitmentData.deadline),
                 status: Number(commitmentData.status),
                 createdAt: Date.now() / 1000 - 86400, // Perkiraan, karena tidak ada data createdAt
@@ -255,15 +254,13 @@ export default function ValidationRequestsPage() {
   };
 
   const handleSubmitFeedback = async () => {
-    if (!selectedRequest) return;
-
-    // TODO: Implement blockchain transaction to confirm validation
-    console.log(
-      `${dialogAction === "approve" ? "Approved" : "Rejected"} request ${
-        selectedRequest.address
-      } with feedback: ${feedbackText}`
-    );
-
+    if (!selectedRequest || !dialogAction) return;
+    console.log("Feedback submitted:", {
+      ...selectedRequest,
+      feedback: feedbackText,
+      status:
+        dialogAction === "approve" ? "CompletedSuccess" : "CompletedFailure",
+    });
     // Reset state
     setSelectedRequest(null);
     setFeedbackText("");
@@ -271,267 +268,300 @@ export default function ValidationRequestsPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50">
-      {/* Decorative elements */}
+    <div className="flex min-h-screen flex-col bg-black bg-[radial-gradient(ellipse_at_top,rgba(246,133,27,0.15)_0%,transparent_60%)] text-gray-100">
       <Elements />
       <Navbar />
 
-      <main className="flex-1 py-8 px-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold">Validation Requests</h1>
-              <p className="text-muted-foreground mt-1">
-                Review and validate commitment completions
-              </p>
+      <main className="flex-1 px-8 pb-8 pt-28">
+        <div className="flex flex-col gap-8">
+          {/* Header */}
+          <div className="p-6 bg-black/30 backdrop-blur-lg rounded-2xl border border-white/10">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-orange-400" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-white">
+                    Validation Requests
+                  </h1>
+                  <p className="text-gray-400">
+                    Approve or reject commitment outcomes.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 w-full md:w-auto">
+                <div className="relative w-full md:w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    type="search"
+                    placeholder="Search by title, creator..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 w-full bg-black/20 border-white/10 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+                  />
+                </div>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[180px] bg-black/20 border-white/10 rounded-lg focus:ring-orange-500 focus:border-orange-500">
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black/80 backdrop-blur-lg border-white/20 text-gray-200">
+                    <SelectItem
+                      value="deadline"
+                      className="focus:bg-orange-500/20"
+                    >
+                      Deadline
+                    </SelectItem>
+                    <SelectItem
+                      value="amount"
+                      className="focus:bg-orange-500/20"
+                    >
+                      Amount
+                    </SelectItem>
+                    <SelectItem
+                      value="created"
+                      className="focus:bg-orange-500/20"
+                    >
+                      Created Date
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <Button variant="outline" className="gap-2" asChild>
-              <Link href="/dashboard">
-                <ArrowUpLeft className="h-4 w-4" /> Back to Dashboard
-              </Link>
-            </Button>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 mb-8">
-            <div className="flex-1">
-              <Input
-                placeholder="Search requests..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="deadline">Sort by Deadline</SelectItem>
-                <SelectItem value="amount">Sort by Amount</SelectItem>
-                <SelectItem value="created">Sort by Created Date</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Tabs defaultValue="pending">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
+          <Tabs defaultValue="pending" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-black/30 border border-white/10 p-1 mb-6">
               <TabsTrigger
                 value="pending"
-                className="data-[state=active]:bg-primary/10"
+                className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-gray-400"
               >
-                Pending
+                <Clock className="mr-2 h-4 w-4" /> Pending
               </TabsTrigger>
               <TabsTrigger
                 value="completed"
-                className="data-[state=active]:bg-primary/10"
+                className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-gray-400"
               >
-                Completed
+                <CheckCircle className="mr-2 h-4 w-4" /> Completed
               </TabsTrigger>
             </TabsList>
 
-            {/* Pending Requests Tab */}
-            <TabsContent value="pending" className="space-y-4">
+            {/* Pending Tab */}
+            <TabsContent value="pending">
               {isLoading ? (
-                // Tampilkan skeleton saat loading
-                Array(3)
-                  .fill(0)
-                  .map((_, index) => (
-                    <ValidationRequestSkeleton
-                      key={`pending-skeleton-${index}`}
-                    />
-                  ))
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <ValidationRequestSkeleton key={`pending-skel-${i}`} />
+                  ))}
+                </div>
               ) : sortedPendingRequests.length > 0 ? (
-                sortedPendingRequests.map((request) => (
-                  <Card
-                    key={request.address}
-                    className="border border-primary/10 bg-background/50 backdrop-blur-sm overflow-hidden"
-                  >
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-yellow-500/70"></div>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <CardTitle>{request.title}</CardTitle>
-                          <CardDescription>
-                            By {request.creator}
-                          </CardDescription>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {sortedPendingRequests.map((request) => (
+                    <div
+                      key={request.address}
+                      className="relative p-6 bg-black/30 backdrop-blur-lg rounded-2xl border border-amber-500/30 hover:border-amber-500/60 transition-all duration-300 shadow-lg shadow-black/20"
+                    >
+                      <CardHeader className="p-0 mb-4">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <CardTitle className="text-lg font-bold text-white">
+                              {request.title}
+                            </CardTitle>
+                            <CardDescription className="text-gray-400 mt-1">
+                              {request.description}
+                            </CardDescription>
+                          </div>
+                          <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20">
+                            Pending
+                          </Badge>
                         </div>
-                        <Badge
-                          variant="outline"
-                          className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-                        >
-                          Pending Validation
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {request.description}
-                      </p>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex items-center text-sm">
-                          <Wallet className="mr-2 h-4 w-4 text-primary" />
-                          Staked: {request.staked}
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <div className="space-y-3 text-sm">
+                          <div className="flex items-center text-gray-400">
+                            <Wallet className="mr-2 h-4 w-4 text-amber-400" />
+                            Stake:{" "}
+                            <span className="font-mono ml-1.5 text-white">
+                              {request.staked}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-gray-400">
+                            <Calendar className="mr-2 h-4 w-4 text-amber-400" />
+                            Deadline:{" "}
+                            <span className="font-mono ml-1.5 text-white">
+                              {new Date(
+                                request.deadline * 1000
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-gray-400">
+                            <User className="mr-2 h-4 w-4 text-amber-400" />
+                            Creator:{" "}
+                            <span className="font-mono ml-1.5 text-white">
+                              {request.creator}
+                            </span>
+                          </div>
+                          {request.creatorReportedSuccess && (
+                            <Alert className="mt-4 bg-amber-500/10 border-amber-500/20 text-amber-300">
+                              <AlertCircle className="h-4 w-4" />
+                              <AlertTitle>
+                                Creator has reported completion!
+                              </AlertTitle>
+                            </Alert>
+                          )}
                         </div>
-                        <div className="flex items-center text-sm">
-                          <Calendar className="mr-2 h-4 w-4 text-primary" />
-                          Deadline:{" "}
-                          {new Date(
-                            request.deadline * 1000
-                          ).toLocaleDateString()}
+                      </CardContent>
+                      <CardFooter className="p-0 mt-6 pt-4 border-t border-white/10">
+                        <div className="flex w-full justify-between">
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handleApprove(request)}
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-3 py-1"
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              onClick={() => handleReject(request)}
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-3 py-1"
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-1 text-orange-400 hover:bg-orange-500/10 hover:text-orange-300"
+                            asChild
+                          >
+                            <Link
+                              href={`/dashboard/commitment/${request.address}`}
+                            >
+                              Details <ChevronRight className="h-4 w-4" />
+                            </Link>
+                          </Button>
                         </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="border-t border-primary/10 bg-muted/30">
-                      <div className="flex w-full justify-between">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-500 border-red-500/20 hover:bg-red-500/10"
-                          onClick={() => handleReject(request)}
-                        >
-                          <XCircle className="mr-2 h-4 w-4" />
-                          Reject
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-green-500 border-green-500/20 hover:bg-green-500/10"
-                          onClick={() => handleApprove(request)}
-                        >
-                          <CheckCircle className="mr-2 h-4 w-4" />
-                          Approve
-                        </Button>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))
+                      </CardFooter>
+                    </div>
+                  ))}
+                </div>
               ) : (
-                <div className="text-center py-12">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <Clock className="h-6 w-6 text-primary" />
+                <div className="text-center p-12 bg-black/30 backdrop-blur-lg rounded-2xl border border-white/10">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mb-4">
+                    <Shield className="h-6 w-6 text-orange-400" />
                   </div>
-                  <h3 className="text-lg font-medium mb-2">
-                    No pending validation requests
+                  <h3 className="text-lg font-medium text-white mb-2">
+                    No Pending Requests
                   </h3>
-                  <p className="text-muted-foreground">
-                    You don't have any pending requests to validate at the
-                    moment.
+                  <p className="text-gray-400">
+                    You have no pending validation requests at the moment.
                   </p>
                 </div>
               )}
             </TabsContent>
 
-            {/* Completed Requests Tab */}
-            <TabsContent value="completed" className="space-y-4">
+            {/* Completed Tab */}
+            <TabsContent value="completed">
               {isLoading ? (
-                // Tampilkan skeleton saat loading
-                Array(3)
-                  .fill(0)
-                  .map((_, index) => (
-                    <ValidationRequestSkeleton
-                      key={`completed-skeleton-${index}`}
-                    />
-                  ))
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <ValidationRequestSkeleton key={`completed-skel-${i}`} />
+                  ))}
+                </div>
               ) : sortedCompletedRequests.length > 0 ? (
-                sortedCompletedRequests.map((request) => (
-                  <Card
-                    key={request.address}
-                    className="border border-primary/10 bg-background/50 backdrop-blur-sm overflow-hidden"
-                  >
-                    <div
-                      className={`absolute top-0 left-0 right-0 h-1 ${
-                        request.validatorReportedSuccess
-                          ? "bg-green-500/70"
-                          : "bg-red-500/70"
-                      }`}
-                    ></div>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <CardTitle>{request.title}</CardTitle>
-                          <CardDescription>
-                            By {request.creator}
-                          </CardDescription>
-                        </div>
-                        {request.validatorReportedSuccess ? (
-                          <Badge
-                            variant="outline"
-                            className="bg-green-500/10 text-green-500 border-green-500/20"
-                          >
-                            Approved
-                          </Badge>
-                        ) : (
-                          <Badge
-                            variant="outline"
-                            className="bg-red-500/10 text-red-500 border-red-500/20"
-                          >
-                            Rejected
-                          </Badge>
-                        )}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {sortedCompletedRequests.map((request) => {
+                    const isSuccess =
+                      request.status === CommitmentStatus.CompletedSuccess;
+                    const borderColor = isSuccess
+                      ? "border-green-500/30 hover:border-green-500/60"
+                      : "border-red-500/30 hover:border-red-500/60";
+                    const badgeClass = isSuccess
+                      ? "bg-green-500/10 text-green-400 border-green-500/20"
+                      : "bg-red-500/10 text-red-400 border-red-500/20";
+                    const iconColor = isSuccess
+                      ? "text-green-400"
+                      : "text-red-400";
+
+                    return (
+                      <div
+                        key={request.address}
+                        className={`relative p-6 bg-black/30 backdrop-blur-lg rounded-2xl border ${borderColor} transition-all duration-300 shadow-lg shadow-black/20`}
+                      >
+                        <CardHeader className="p-0 mb-4">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <CardTitle className="text-lg font-bold text-white">
+                                {request.title}
+                              </CardTitle>
+                              <CardDescription className="text-gray-400 mt-1">
+                                {request.description}
+                              </CardDescription>
+                            </div>
+                            <Badge className={badgeClass}>
+                              {isSuccess ? "Approved" : "Rejected"}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                          <div className="space-y-3 text-sm">
+                            <div className={`flex items-center ${iconColor}`}>
+                              <Wallet className="mr-2 h-4 w-4" />
+                              Stake:{" "}
+                              <span className="font-mono ml-1.5 text-white">
+                                {request.staked}
+                              </span>
+                            </div>
+                            <div className={`flex items-center ${iconColor}`}>
+                              <User className="mr-2 h-4 w-4" />
+                              Creator:{" "}
+                              <span className="font-mono text-sm ml-1.5 text-white">
+                                {request.creator}
+                              </span>
+                            </div>
+                            {request.feedback && (
+                              <Alert className="mt-4 bg-white/5 border-white/10 text-gray-300">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>Your Feedback</AlertTitle>
+                                <AlertDescription>
+                                  {request.feedback}
+                                </AlertDescription>
+                              </Alert>
+                            )}
+                          </div>
+                        </CardContent>
+                        <CardFooter className="p-0 mt-6 pt-4 border-t border-white/10">
+                          <div className="flex w-full justify-end">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="gap-1 text-orange-400 hover:bg-orange-500/10 hover:text-orange-300"
+                              asChild
+                            >
+                              <Link
+                                href={`/dashboard/commitment/${request.address}`}
+                              >
+                                View Details{" "}
+                                <ChevronRight className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                          </div>
+                        </CardFooter>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {request.description}
-                      </p>
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="flex items-center text-sm">
-                          <Wallet className="mr-2 h-4 w-4 text-primary" />
-                          Staked: {request.staked}
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <Calendar className="mr-2 h-4 w-4 text-primary" />
-                          Completed:{" "}
-                          {request.completedAt
-                            ? new Date(
-                                request.completedAt * 1000
-                              ).toLocaleDateString()
-                            : "N/A"}
-                        </div>
-                      </div>
-                      {request.feedback && (
-                        <Alert
-                          className={`${
-                            request.validatorReportedSuccess
-                              ? "bg-green-500/5 text-green-500 border-green-500/20"
-                              : "bg-red-500/5 text-red-500 border-red-500/20"
-                          }`}
-                        >
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertTitle>Feedback</AlertTitle>
-                          <AlertDescription>
-                            {request.feedback}
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                    </CardContent>
-                    <CardFooter className="border-t border-primary/10 bg-muted/30">
-                      <div className="flex w-full justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-1 text-primary"
-                          asChild
-                        >
-                          <Link
-                            href={`/dashboard/commitment/${request.address}`}
-                          >
-                            View Details <ChevronRight className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))
+                    );
+                  })}
+                </div>
               ) : (
-                <div className="text-center py-12">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <History className="h-6 w-6 text-primary" />
+                <div className="text-center p-12 bg-black/30 backdrop-blur-lg rounded-2xl border border-white/10">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mb-4">
+                    <History className="h-6 w-6 text-orange-400" />
                   </div>
-                  <h3 className="text-lg font-medium mb-2">
-                    No completed validations
+                  <h3 className="text-lg font-medium text-white mb-2">
+                    No Completed Validations
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-gray-400">
                     You haven't completed any validation requests yet.
                   </p>
                 </div>
@@ -554,12 +584,12 @@ export default function ValidationRequestsPage() {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="bg-black/50 backdrop-blur-xl border border-white/10 text-gray-200">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-white">
               {dialogAction === "approve" ? "Approve" : "Reject"} Commitment
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-400">
               {dialogAction === "approve"
                 ? "Confirm that this commitment has been completed successfully."
                 : "Explain why this commitment has not been completed successfully."}
@@ -570,8 +600,8 @@ export default function ValidationRequestsPage() {
             <>
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium">Commitment Details</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="font-medium text-white">Commitment Details</h4>
+                  <p className="text-sm text-gray-400">
                     {selectedRequest.title}
                   </p>
                 </div>
@@ -580,13 +610,14 @@ export default function ValidationRequestsPage() {
                   placeholder="Add your feedback here..."
                   value={feedbackText}
                   onChange={(e) => setFeedbackText(e.target.value)}
-                  className="min-h-[100px]"
+                  className="min-h-[100px] bg-black/20 border-white/10 text-gray-200 focus:ring-orange-500 focus:border-orange-500"
                 />
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="mt-4">
                 <Button
                   variant="outline"
+                  className="border-white/20 text-gray-300 hover:bg-white/10 hover:text-white"
                   onClick={() => {
                     setSelectedRequest(null);
                     setFeedbackText("");
@@ -599,8 +630,8 @@ export default function ValidationRequestsPage() {
                   onClick={handleSubmitFeedback}
                   className={
                     dialogAction === "approve"
-                      ? "bg-green-500 hover:bg-green-600"
-                      : "bg-red-500 hover:bg-red-600"
+                      ? "bg-green-600 hover:bg-green-700 text-white"
+                      : "bg-red-600 hover:bg-red-700 text-white"
                   }
                 >
                   {dialogAction === "approve" ? "Approve" : "Reject"}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useMetaWillStats } from "./useMetaWillStats";
-import { formatEther } from "viem";
+import { formatUnits } from "viem";
 
 // Tipe data untuk komitmen
 export type Commitment = {
@@ -22,8 +22,12 @@ export type Commitment = {
 
 export function useCommitments() {
   const { address } = useAccount();
-  const { userCommitments, validatorCommitments, isLoading } =
-    useMetaWillStats();
+  const {
+    userCommitments,
+    validatorCommitments,
+    isLoadingUserCommitments,
+    isLoadingValidatorCommitments,
+  } = useMetaWillStats();
 
   const [activeCommitments, setActiveCommitments] = useState<Commitment[]>([]);
   const [pastCommitments, setPastCommitments] = useState<Commitment[]>([]);
@@ -34,7 +38,14 @@ export function useCommitments() {
 
   useEffect(() => {
     async function fetchCommitmentDetails() {
-      if (isLoading || !address) return;
+      if (
+        isLoadingUserCommitments ||
+        isLoadingValidatorCommitments ||
+        !address
+      ) {
+        setIsLoadingCommitments(true);
+        return;
+      }
 
       setIsLoadingCommitments(true);
 
@@ -87,7 +98,13 @@ export function useCommitments() {
     }
 
     fetchCommitmentDetails();
-  }, [userCommitments, validatorCommitments, isLoading, address]);
+  }, [
+    userCommitments,
+    validatorCommitments,
+    isLoadingUserCommitments,
+    isLoadingValidatorCommitments,
+    address,
+  ]);
 
   // Helper function to fetch commitment details
   async function fetchCommitmentDetail(
@@ -150,7 +167,7 @@ export function useCommitments() {
         address: commitmentAddress,
         title: String(titleResult),
         description: String(descriptionResult),
-        staked: `${formatEther(BigInt(String(stakeAmountResult)))} ETH`,
+        staked: `${formatUnits(BigInt(String(stakeAmountResult)), 6)} USDC`,
         deadline: new Date(Number(deadlineResult) * 1000).toLocaleDateString(),
         validator: `${String(validatorResult).slice(0, 6)}...${String(
           validatorResult
@@ -190,6 +207,8 @@ export function useCommitments() {
     activeCommitments,
     pastCommitments,
     validationRequests,
-    isLoading: isLoading || isLoadingCommitments,
+    isLoadingUserCommitments: isLoadingUserCommitments || isLoadingCommitments,
+    isLoadingValidatorCommitments:
+      isLoadingValidatorCommitments || isLoadingCommitments,
   };
 }

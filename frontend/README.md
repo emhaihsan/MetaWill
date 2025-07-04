@@ -1,118 +1,70 @@
 # MetaWill Frontend
 
-<img src="public/mascott.png" alt="MetaWill Logo" width="120"/>
+This is the frontend for the MetaWill dApp, built with Next.js, TypeScript, and Tailwind CSS. It interacts with the MetaWill smart contracts on the Base Sepolia testnet.
 
-The frontend application for MetaWill, a decentralized platform for creating and managing personal commitments with financial accountability on the Linea blockchain.
+---
 
-## Overview
+## Features
 
-This Next.js application provides the user interface for MetaWill, allowing users to:
-
-- Create new commitments with ETH stakes
-- View and manage their active and past commitments
-- Validate commitments as a third-party validator
-- Track commitment progress and outcomes
-- Connect with the Linea blockchain through their wallet
-
-## Tech Stack
-
-- **Framework**: Next.js 15 with App Router
-- **UI Components**: Tailwind CSS with shadcn/ui
-- **State Management**: React Hooks
-- **Blockchain Integration**:
-  - Wagmi for React hooks
-  - Viem for Ethereum interactions
-  - Custom API endpoints for contract interaction
-- **Authentication**: Wallet-based authentication
-
-## Project Structure
-
-```
-frontend/
-├── public/             # Static assets
-├── src/
-│   ├── abi/            # Contract ABIs
-│   ├── app/            # Next.js app router pages
-│   │   ├── api/        # API routes for blockchain interaction
-│   │   ├── dashboard/  # Dashboard and commitment management pages
-│   │   └── ...         # Other pages
-│   ├── components/     # Reusable UI components
-│   ├── hooks/          # Custom React hooks
-│   └── lib/            # Utility functions and configurations
-├── .env                # Environment variables (create from .env.example)
-└── ...                 # Configuration files
-```
-
-## Key Features
-
-- **Dashboard**: Central hub showing active commitments, past commitments, and validation requests
-- **Commitment Creation**: Form-based interface for creating new commitments
-- **Validation Interface**: Tools for validators to review and confirm commitment completion
-- **Commitment Details**: Detailed view of individual commitments with status updates
-- **Wallet Integration**: Seamless connection with MetaMask and other wallets
+- **Wallet Connection**: Connect your wallet using the **MetaMask SDK** .
+- **Dashboard**: A central place to view all your active, completed, and failed commitments.
+- **Create Commitments**: An easy-to-use, multi-step form to create a new commitment.
+- **Validation**: A dedicated page for validators to see and act on pending validation requests.
 
 ## Getting Started
 
+Follow these instructions to run the frontend application on your local machine.
+
 ### Prerequisites
 
-- Node.js 18+ and npm
-- MetaMask or compatible wallet with Linea Sepolia testnet configured
+- [Node.js](https://nodejs.org/en/) (v18 or later)
+- [Yarn](https://yarnpkg.com/)
+- A web3 wallet like [MetaMask](https://metamask.io/)
 
 ### Installation
 
-1. Clone the repository and navigate to the frontend directory:
+1.  **Clone the repository**:
 
-```bash
-git clone https://github.com/yourusername/metawill.git
-cd metawill/frontend
-```
+    ```bash
+    git clone https://github.com/your-username/MetaWill.git
+    cd MetaWill/frontend
+    ```
 
-2. Install dependencies:
+2.  **Install dependencies**:
 
-```bash
-npm install
-```
+    ```bash
+    yarn install
+    ```
 
-3. Create a `.env.local` file based on `.env.example` and add your configuration:
+3.  **Set up environment variables**:
 
-```
-NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_api_key
-NEXT_PUBLIC_WALLET_CONNECT_ID=your_wallet_connect_id
-```
+    Create a file named `.env.local` in the `frontend` directory and add the following variables. You need a WalletConnect Cloud project ID to enable wallet connections.
 
-4. Start the development server:
+    ```
+    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID="YOUR_WALLETCONNECT_PROJECT_ID"
+    ```
 
-```bash
-npm run dev
-```
+    You can get a `PROJECT_ID` from [WalletConnect Cloud](https://cloud.walletconnect.com/).
 
-5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+4.  **Run the development server**:
 
-## API Endpoints
+    ```bash
+    yarn dev
+    ```
 
-The frontend includes several API endpoints to interact with the blockchain:
+    Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-- `/api/read-contract`: Read data from smart contracts
-- `/api/commitment-details`: Get detailed information about specific commitments
-- `/api/write-contract`: Write data to smart contracts (create commitments, report completion, etc.)
+## Important Notes
 
-## Build for Production
+- **Network**: The app is hardcoded to work with the **Base Sepolia testnet**. Please ensure your wallet is connected to this network.
+- **USDC**: You will need Base Sepolia USDC to create commitments. You can get some from a faucet.
 
-```bash
-npm run build
-npm run start
-```
+## Tech Stack & Libraries
 
-## Testing
-
-```bash
-npm run test
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License.
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Blockchain Interaction**: [Wagmi](https://wagmi.sh/) & [Viem](https://viem.sh/), using the **MetaMask SDK** for wallet connections.
+- **UI Components**: [Shadcn/UI](https://ui.shadcn.com/)
+- **Date Management**: [date-fns](https://date-fns.org/)
+- **Icons**: [Lucide React](https://lucide.dev/)

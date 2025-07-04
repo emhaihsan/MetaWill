@@ -3,6 +3,11 @@
     "type": "constructor",
     "inputs": [
       {
+        "name": "_usdcTokenAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
         "name": "_creator",
         "type": "address",
         "internalType": "address"
@@ -28,12 +33,17 @@
         "internalType": "uint256"
       },
       {
+        "name": "_stakeAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
         "name": "_donationAddress",
         "type": "address",
         "internalType": "address"
       }
     ],
-    "stateMutability": "payable"
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -226,6 +236,19 @@
         "name": "",
         "type": "string",
         "internalType": "string"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "usdcToken",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IERC20"
       }
     ],
     "stateMutability": "view"

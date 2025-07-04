@@ -9,12 +9,12 @@ import MainContent from "@/components/dashboard/maincontent";
 
 export default function DashboardPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/50">
+    <div className="flex min-h-screen flex-col bg-black bg-[radial-gradient(ellipse_at_top,rgba(246,133,27,0.15)_0%,transparent_60%)] text-gray-100">
       {/* Decorative elements */}
       <Elements />
       <Navbar />
 
-      <main className="flex-1 py-8 px-8">
+      <main className="flex-1 px-8 pb-8 pt-28">
         <div className="flex flex-col gap-8">
           {/* Dashboard Header */}
           <Header />

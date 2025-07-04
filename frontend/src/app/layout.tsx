@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toast";
+import RouteGuard from "@/components/RouteGuard";
 
 import "./globals.css";
 
@@ -89,7 +90,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <RouteGuard>{children}</RouteGuard>
+        </Providers>
         <Toaster />
       </body>
     </html>

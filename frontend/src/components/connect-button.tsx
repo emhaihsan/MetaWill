@@ -9,7 +9,7 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { Wallet } from "lucide-react";
-import { linea, lineaSepolia } from "wagmi/chains";
+import { base, baseSepolia } from "wagmi/chains";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,9 +26,6 @@ export function ConnectButton() {
   const { switchChain } = useSwitchChain();
 
   const handleConnect = () => {
-    // Set connection event flag before connecting
-    sessionStorage.setItem("connectionEvent", "true");
-
     const connector = connectors.find((c) => c.name === "MetaMask");
     if (connector) {
       connect({ connector });
@@ -41,10 +38,10 @@ export function ConnectButton() {
 
   const getNetworkName = (id: number) => {
     switch (id) {
-      case linea.id:
-        return "Linea";
-      case lineaSepolia.id:
-        return "Linea Sepolia";
+      case base.id:
+        return "Base";
+      case baseSepolia.id:
+        return "Base Sepolia";
       default:
         return "Unknown Network";
     }
@@ -53,27 +50,32 @@ export function ConnectButton() {
   return (
     <>
       {isConnected && address ? (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 p-1.5 bg-black/30 backdrop-blur-lg rounded-xl border border-white/10">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant="secondary"
+                variant="ghost"
                 size="sm"
-                className="hidden sm:flex text-[#F6851B] border-[#F6851B]/20 hover:bg-[#F6851B]/10"
+                className="hidden sm:flex text-orange-400 hover:bg-white/5 hover:text-orange-300"
               >
                 {getNetworkName(chainId)}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent
+              align="end"
+              className="bg-gray-900 border-white/10 text-white"
+            >
               <DropdownMenuItem
-                onClick={() => switchChain({ chainId: linea.id })}
+                onClick={() => switchChain({ chainId: base.id })}
+                className="focus:bg-white/10 focus:text-orange-400"
               >
-                Linea Mainnet
+                Base Mainnet
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => switchChain({ chainId: lineaSepolia.id })}
+                onClick={() => switchChain({ chainId: baseSepolia.id })}
+                className="focus:bg-white/10 focus:text-orange-400"
               >
-                Linea Sepolia (Testnet)
+                Base Sepolia (Testnet)
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -82,29 +84,31 @@ export function ConnectButton() {
             <DropdownMenuTrigger asChild>
               <Button
                 size="sm"
-                className="flex gap-2 bg-[#F6851B] hover:bg-[#F6851B]/90 text-white"
+                className="flex gap-2 bg-white/5 hover:bg-white/10 text-white"
               >
-                <Wallet className="h-4 w-4" /> {formatAddress(address)}
+                <Wallet className="h-4 w-4 text-orange-400" />{" "}
+                {formatAddress(address)}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="px-4 py-3">
-                <div className="mt-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigator.clipboard.writeText(address);
-                    }}
-                    className="flex items-center gap-2 text-[#F6851B] hover:text-[#F6851B]/80"
-                  >
-                    <Copy className="h-4 w-4" />
-                    <span>Copy Full Address</span>
-                  </button>
-                </div>
+            <DropdownMenuContent
+              align="end"
+              className="w-56 bg-gray-900 border-white/10 text-white"
+            >
+              <div className="px-2 py-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(address);
+                  }}
+                  className="w-full text-left flex items-center gap-2 text-gray-300 hover:text-orange-400 p-2 rounded-md transition-colors duration-200 hover:bg-white/5"
+                >
+                  <Copy className="h-4 w-4" />
+                  <span>Copy Address</span>
+                </button>
               </div>
               <DropdownMenuItem
                 onClick={() => disconnect()}
-                className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                className="text-red-500 focus:text-red-400 focus:bg-red-500/10"
               >
                 Disconnect
               </DropdownMenuItem>
@@ -113,11 +117,11 @@ export function ConnectButton() {
         </div>
       ) : (
         <Button
-          size="sm"
-          className="flex gap-2 bg-[#F6851B] hover:bg-[#F6851B]/90 text-white"
+          size="lg"
+          className="group flex gap-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-black font-bold shadow-[0_0_20px_rgba(246,133,27,0.4)] hover:shadow-[0_0_30px_rgba(246,133,27,0.6)] transition-all duration-300 transform hover:scale-105"
           onClick={handleConnect}
         >
-          <Wallet className="h-4 w-4" /> Connect Wallet
+          <Wallet className="h-5 w-5" /> Connect Wallet
         </Button>
       )}
     </>

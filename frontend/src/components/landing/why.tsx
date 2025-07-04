@@ -1,83 +1,90 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { CheckCircle } from "lucide-react";
 import Image from "next/image";
+import { ShieldCheck, Scale, DatabaseZap, HeartHandshake } from "lucide-react";
+
+const whyData = [
+  {
+    icon: ShieldCheck,
+    title: "Unyielding Security",
+    description:
+      "Built on the blockchain, your commitments are immutable, transparent, and free from any single point of failure.",
+  },
+  {
+    icon: Scale,
+    title: "Provable Fairness",
+    description:
+      "A trustless validator system ensures that outcomes are based on real-world results, not on biased intermediaries.",
+  },
+  {
+    icon: DatabaseZap,
+    title: "On-Chain Legacy",
+    description:
+      "Every successful commitment becomes a permanent, verifiable part of your on-chain identity, building a legacy of accountability.",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Aligned Incentives",
+    description:
+      "With your own assets at stake, your motivation is intrinsically linked to your success, creating powerful self-incentives.",
+  },
+];
 
 export default function Why() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50 relative">
-      <div className="absolute inset-0 bg-grid-[#F6851B]/5 [mask-image:linear-gradient(to_bottom,transparent,black,transparent)]"></div>
-      <div className="container mx-auto px-4 md:px-8 relative">
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10 md:gap-12 lg:gap-16">
+    <section
+      id="why"
+      className="w-full py-20 md:py-32 bg-gray-950 relative overflow-hidden"
+    >
+      {/* Background Glow */}
+      <div className="absolute -left-1/4 top-1/4 w-1/2 h-1/2 bg-orange-500/10 rounded-full blur-[150px] animate-pulse-slow"></div>
+      <div className="absolute -right-1/4 bottom-1/4 w-1/2 h-1/2 bg-purple-500/10 rounded-full blur-[150px] animate-pulse-slower"></div>
+
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="grid md:grid-cols-2 gap-12 lg:gap-24 items-center">
           {/* Left side - Content */}
-          <div className="w-full md:w-6/12 flex flex-col justify-center space-y-6 pl-10">
-            <div className="space-y-5">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                Why Choose MetaWill?
-              </h2>
-              <p className="text-muted-foreground text-lg md:text-xl max-w-xl">
-                MetaWill combines the power of blockchain with personal
-                accountability to help you achieve your goals.
-              </p>
+          <div className="flex flex-col justify-center space-y-6 p-8 bg-black/30 backdrop-blur-lg rounded-2xl border border-white/10 shadow-2xl shadow-orange-500/10 animate-fade-in-up animation-delay-300">
+            <div className="inline-block rounded-full bg-orange-500/10 px-4 py-2 text-sm font-medium text-orange-400 border border-orange-500/20 self-start">
+              The MetaWill Difference
             </div>
-            <ul className="grid gap-4 pt-2">
-              <li className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
-                  <CheckCircle className="h-4 w-4 text-[#F6851B]" />
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-white">
+              More Than Just a Promise
+            </h2>
+            <p className="text-gray-300 md:text-xl/relaxed max-w-xl">
+              We transform personal goals into verifiable assets, building a new
+              foundation for trust and accountability.
+            </p>
+            <div className="grid gap-6 pt-4">
+              {whyData.map((item, index) => (
+                <div key={index} className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white/5 border border-white/10">
+                    <item.icon className="h-6 w-6 text-orange-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-400">{item.description}</p>
+                  </div>
                 </div>
-                <span>Transparent and immutable commitment tracking</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
-                  <CheckCircle className="h-4 w-4 text-[#F6851B]" />
-                </div>
-                <span>Financial incentives to keep your promises</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
-                  <CheckCircle className="h-4 w-4 text-[#F6851B]" />
-                </div>
-                <span>Trustless verification through validator system</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
-                  <CheckCircle className="h-4 w-4 text-[#F6851B]" />
-                </div>
-                <span>Positive social impact through charity donations</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F6851B]/20">
-                  <CheckCircle className="h-4 w-4 text-[#F6851B]" />
-                </div>
-                <span>Decentralized platform with no central authority</span>
-              </li>
-            </ul>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-[#F6851B]/30 hover:bg-[#F6851B]/10 text-[#F6851B] hover:border-[#F6851B] shadow-[0_0_10px_rgba(246,133,27,0.1)]"
-                asChild
-              >
-                <Link href="/whitepaper">Read Whitepaper</Link>
-              </Button>
+              ))}
             </div>
           </div>
 
           {/* Right side - Mascot */}
-          <div className="w-full md:w-6/12 flex items-center justify-center mb-10 md:mb-0 order-first md:order-last">
-            <div className="relative h-[320px] w-[320px] sm:h-[400px] sm:w-[400px] lg:h-[450px] lg:w-[450px] animate-float-delay">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#F6851B]/30 to-transparent blur-2xl"></div>
-              <div className="relative h-full w-full flex items-center justify-center">
-                <Image
-                  src="/mascott2.png"
-                  alt="MetaWill Mascot 2"
-                  width={450}
-                  height={450}
-                  className="object-contain max-h-full max-w-full"
-                  priority
-                />
-              </div>
+          <div className="flex items-center justify-center animate-fade-in-up">
+            <div className="relative w-[300px] h-[300px] md:w-[450px] md:h-[450px] animate-float">
+              <div className="absolute inset-0 rounded-full border-2 border-orange-500/30 animate-ping-slow"></div>
+              <div className="absolute inset-4 rounded-full border-2 border-orange-500/20 animate-ping-slower"></div>
+              <Image
+                src="/mascott2.png"
+                alt="MetaWill Mascot 2"
+                layout="fill"
+                objectFit="contain"
+                className="drop-shadow-[0_10px_30px_rgba(246,133,27,0.4)]"
+              />
             </div>
           </div>
         </div>

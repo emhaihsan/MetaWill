@@ -1,13 +1,13 @@
-import { useReadContract, useWriteContract } from 'wagmi';
-import { CONTRACT_ADDRESSES } from '../lib/contract-config';
-import MetaWillFactoryABI from '../abi/MetaWillFactory.json';
-import MetaWillCommitmentABI from '../abi/MetaWillCommitment.json';
+import { useReadContract, useWriteContract, useChainId } from 'wagmi';
+import { contractConfig } from '../lib/contract-config';
 import { Address } from 'viem';
 
-// Hook untuk membaca data dari kontrak factory
+// Hook untuk interaksi dengan kontrak factory
 export function useMetaWillFactory() {
-  // Fungsi untuk membuat komitmen baru
-  const { writeContract, isPending: isCreating } = useWriteContract();
+  const chainId = useChainId();
+  const config = contractConfig[chainId];
+
+  const { writeContractAsync, isPending: isExecuting } = useWriteContract();
 
   const createNewCommitment = async (
     title: string,
@@ -17,33 +17,49 @@ export function useMetaWillFactory() {
     donationAddressIndex: number,
     stakeAmount: bigint
   ) => {
-    return writeContract({
-      address: CONTRACT_ADDRESSES.FACTORY,
-      abi: MetaWillFactoryABI,
+    if (!config) {
+      throw new Error('Unsupported network. Please switch to a supported network.');
+    }
+
+    // Step 1: Approve the factory to spend USDC
+    await writeContractAsync({
+      address: config.usdc.address,
+      abi: config.usdc.abi,
+      functionName: 'approve',
+      args: [config.metaWillFactory.address, stakeAmount],
+    });
+
+    // Step 2: Create the commitment
+    return writeContractAsync({
+      address: config.metaWillFactory.address,
+      abi: config.metaWillFactory.abi,
       functionName: 'createCommitment',
-      args: [title, description, deadline, validator, donationAddressIndex],
-      value: stakeAmount,
+      args: [title, description, deadline, validator, donationAddressIndex, stakeAmount],
     });
   };
 
   return {
     createNewCommitment,
-    isCreating,
+    isCreating: isExecuting,
   };
 }
 
 // Hook untuk mendapatkan daftar donasi
 export function useDonationAddresses() {
-  // Definisikan tipe data yang diharapkan dari getDonationAddresses
+  const chainId = useChainId();
+  const config = contractConfig[chainId];
+
   type DonationAddressesResult = [Address[], string[]];
 
   const { data, isLoading, error, refetch } = useReadContract({
-    address: CONTRACT_ADDRESSES.FACTORY,
-    abi: MetaWillFactoryABI,
+    address: config?.metaWillFactory.address,
+    abi: config?.metaWillFactory.abi,
     functionName: 'getDonationAddresses',
+    query: {
+      enabled: !!config,
+    },
   });
 
-  // Pastikan data memiliki tipe yang benar
   const typedData = data as DonationAddressesResult | undefined;
 
   return {
@@ -57,13 +73,16 @@ export function useDonationAddresses() {
 
 // Hook untuk mendapatkan komitmen user
 export function useUserCommitments(userAddress?: Address) {
+  const chainId = useChainId();
+  const config = contractConfig[chainId];
+
   const { data, isLoading, error, refetch } = useReadContract({
-    address: CONTRACT_ADDRESSES.FACTORY,
-    abi: MetaWillFactoryABI,
+    address: config?.metaWillFactory.address,
+    abi: config?.metaWillFactory.abi,
     functionName: 'getUserCommitments',
     args: userAddress ? [userAddress] : undefined,
     query: {
-      enabled: !!userAddress,
+      enabled: !!userAddress && !!config,
     },
   });
 
@@ -77,13 +96,16 @@ export function useUserCommitments(userAddress?: Address) {
 
 // Hook untuk mendapatkan komitmen validator
 export function useValidatorCommitments(validatorAddress?: Address) {
+  const chainId = useChainId();
+  const config = contractConfig[chainId];
+
   const { data, isLoading, error, refetch } = useReadContract({
-    address: CONTRACT_ADDRESSES.FACTORY,
-    abi: MetaWillFactoryABI,
+    address: config?.metaWillFactory.address,
+    abi: config?.metaWillFactory.abi,
     functionName: 'getValidatorCommitments',
     args: validatorAddress ? [validatorAddress] : undefined,
     query: {
-      enabled: !!validatorAddress,
+      enabled: !!validatorAddress && !!config,
     },
   });
 
@@ -97,38 +119,36 @@ export function useValidatorCommitments(validatorAddress?: Address) {
 
 // Hook untuk interaksi dengan kontrak commitment
 export function useMetaWillCommitment(commitmentAddress?: Address) {
-  // Fungsi untuk mendapatkan detail komitmen
+  const chainId = useChainId();
+  const config = contractConfig[chainId];
+
   const { data, isLoading, error, refetch } = useReadContract({
     address: commitmentAddress,
-    abi: MetaWillCommitmentABI,
+    abi: config?.metaWillCommitment.abi,
     functionName: 'getCommitmentDetails',
     query: {
-      enabled: !!commitmentAddress,
+      enabled: !!commitmentAddress && !!config,
     },
   });
 
-  // Fungsi untuk melaporkan keberhasilan oleh creator
-  const { writeContract: reportSuccess, isPending: isReporting } = useWriteContract();
+  const { writeContractAsync, isPending: isExecutingTransaction } = useWriteContract();
 
   const reportCommitmentSuccess = async () => {
-    if (!commitmentAddress) return;
+    if (!commitmentAddress || !config) return;
     
-    return reportSuccess({
+    return writeContractAsync({
       address: commitmentAddress,
-      abi: MetaWillCommitmentABI,
+      abi: config.metaWillCommitment.abi,
       functionName: 'reportSuccess',
     });
   };
 
-  // Fungsi untuk validator mengkonfirmasi keberhasilan
-  const { writeContract: validateCompletion, isPending: isValidating } = useWriteContract();
-
   const validateCommitmentCompletion = async (isSuccessful: boolean) => {
-    if (!commitmentAddress) return;
+    if (!commitmentAddress || !config) return;
     
-    return validateCompletion({
+    return writeContractAsync({
       address: commitmentAddress,
-      abi: MetaWillCommitmentABI,
+      abi: config.metaWillCommitment.abi,
       functionName: 'validateCompletion',
       args: [isSuccessful],
     });
@@ -141,7 +161,7 @@ export function useMetaWillCommitment(commitmentAddress?: Address) {
     refetch,
     reportCommitmentSuccess,
     validateCommitmentCompletion,
-    isReporting,
-    isValidating,
+    isReporting: isExecutingTransaction,
+    isValidating: isExecutingTransaction,
   };
 }

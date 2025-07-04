@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
 import "../src/MetaWillFactory.sol";
@@ -8,36 +8,31 @@ import "../src/MetaWillDonation.sol";
 contract DeployScript is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address usdcAddress = vm.envAddress("USDC_ADDRESS");
+
         vm.startBroadcast(deployerPrivateKey);
 
-        // Create initial donation addresses
+        // Setup donasi
         address[] memory initialDonationAddresses = new address[](3);
         string[] memory initialDonationNames = new string[](3);
 
-        // First donation option (e.g., an education charity)
-        MetaWillDonation donation1 = new MetaWillDonation();
+        MetaWillDonation donation1 = new MetaWillDonation(usdcAddress);
         initialDonationAddresses[0] = address(donation1);
         initialDonationNames[0] = "Education For All Foundation";
 
-        // Second donation option (e.g., an environmental charity)
-        MetaWillDonation donation2 = new MetaWillDonation();
+        MetaWillDonation donation2 = new MetaWillDonation(usdcAddress);
         initialDonationAddresses[1] = address(donation2);
-        initialDonationNames[1] = "World Hunger Relief Foundation";
+        initialDonationNames[1] = "Climate Action Fund";
 
-        // Third donation option (e.g., a health charity)
-        MetaWillDonation donation3 = new MetaWillDonation();
+        MetaWillDonation donation3 = new MetaWillDonation(usdcAddress);
         initialDonationAddresses[2] = address(donation3);
-        initialDonationNames[2] = "Medical Aid Foundation";
+        initialDonationNames[2] = "Animal Welfare Society";
 
-        // Deploy factory with initial donation addresses
-        uint256 minStake = 0.001 ether;
-        uint256 maxStake = 1000 ether;
-        MetaWillFactory factory = new MetaWillFactory(
-            initialDonationAddresses,
-            initialDonationNames,
-            minStake,
-            maxStake
-        );
+        // Deploy factory
+        uint256 minStake = 5 * 1e5; // 0.5 USDC
+        uint256 maxStake = 1000 * 1e6; // 1000 USDC
+        MetaWillFactory factory =
+            new MetaWillFactory(usdcAddress, initialDonationAddresses, initialDonationNames, minStake, maxStake);
 
         vm.stopBroadcast();
 

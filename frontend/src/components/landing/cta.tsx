@@ -1,37 +1,50 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { useAccount } from "wagmi";
+import { ConnectButton } from "@/components/connect-button";
 
 export default function CTA() {
+  const { isConnected } = useAccount();
+
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-[#F6851B] text-primary-foreground relative overflow-hidden">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(to_bottom,transparent,black,transparent)]"></div>
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-white/10 blur-3xl animate-pulse-slow"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+    <section className="w-full py-20 md:py-32 bg-gray-950 relative overflow-hidden">
+      {/* Background Visuals */}
+      <div className="absolute inset-0 w-full h-full bg-grid-white/5 [mask-image:radial-gradient(ellipse_at_center,transparent_30%,black)]"></div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-[600px] h-[600px] bg-gradient-to-tr from-orange-500/30 to-purple-500/30 rounded-full blur-[150px] animate-spin-slow"></div>
       </div>
-      <div className="px-4 md:px-6 relative">
-        <div className="flex flex-col items-center justify-center space-y-6 text-center">
-          <div className="space-y-4">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl animate-fade-up">
-              Your Commitments, Made Unbreakable
-            </h2>
-            <p className="mx-auto max-w-[700px] md:text-xl/relaxed animate-fade-up animate-delay-100">
-              Harness the power of blockchain to turn your promises into
-              actions. With MetaWill, your word becomes your bond.
-            </p>
+
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="max-w-3xl mx-auto text-center bg-black/30 backdrop-blur-lg rounded-2xl border border-white/10 p-8 md:p-12 shadow-2xl shadow-orange-500/10">
+          <div className="inline-block rounded-full bg-orange-500/10 px-4 py-2 text-sm font-medium text-orange-400 border border-orange-500/20 mb-6">
+            Your Future is Verifiable
           </div>
-          <div className="flex flex-col gap-4 min-[400px]:flex-row animate-fade-up animate-delay-300">
-            <Button
-              size="lg"
-              variant="secondary"
-              className="border-white/80 bg-white hover:bg-white/90 text-[#F6851B] font-medium shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all"
-              asChild
-            >
-              <Link href="/whitepaper">Read Whitepaper</Link>
-            </Button>
-          </div>
-          <div className="text-xs text-white/60 mt-4 animate-fade-up animate-delay-500">
-            Secure • Transparent • Empowering
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-white mb-6">
+            Forge Your On-Chain Legacy
+          </h2>
+          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+            Stop wishing, start doing. Turn your ambitions into immutable,
+            on-chain achievements. The time to build your legacy of
+            accountability is now.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {isConnected ? (
+              <Button
+                size="lg"
+                className="group w-full sm:w-auto bg-gradient-to-r from-orange-500 to-yellow-400 text-white font-bold text-lg shadow-[0_0_30px_rgba(246,133,27,0.4)] hover:shadow-[0_0_40px_rgba(246,133,27,0.6)] transition-all duration-300 transform hover:scale-105 animate-pulse-slow"
+                asChild
+              >
+                <Link href="/dashboard">
+                  Launch App
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            ) : (
+              <ConnectButton />
+            )}
           </div>
         </div>
       </div>
